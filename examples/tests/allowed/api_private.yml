@@ -1,0 +1,59 @@
+# SAM TEMPLATE
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Hello SAM
+
+Resources:
+  helloAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      EndpointConfiguration: PRIVATE
+      DefinitionBody:
+        swagger: 2.0
+        paths:
+          "/hello":
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri:
+                  !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${hello.Arn}/invocations
+              responses: {}
+        x-amazon-apigateway-policy:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Deny"
+              Principal: "*"
+              Action:
+                - "execute-api:Invoke"
+              Resource: "execute-api:/*"
+              Condition:
+                StringNotEquals:
+                  aws:SourceVpc:  "vpc-000000"
+            - Effect: "Allow"
+              Principal: "*"
+              Action:
+                - "execute-api:Invoke"
+              Resource: "execute-api:/*"
+
+  hello:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: s3://bucket/path.zip
+      Handler: "index.handle"
+      Runtime: "nodejs6.10"
+      Role: role_correct
+      Timeout: 5
+      Events:
+        hi:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            RestApiId: !Ref helloAPI
+            Path: /hello
+            Method: GET
+
+Outputs:
+  ApiUrl:
+    Description: URL of your API endpoint
+    Value: !Sub "https://${helloAPI}.execute-api.${AWS::Region}.amazonaws.com/dev"

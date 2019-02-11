@@ -1,0 +1,40 @@
+# CUSTOM FENRIR PROPERTIES
+ProjectName: "coinbase/fenrir"
+ConfigName: "development"
+
+# SAM TEMPLATE
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Hello SAM
+
+Resources:
+  helloAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      EndpointConfiguration: REGIONAL
+  hello:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: s3://bucket/path.zip
+      Role: coinbase-fenrir-lambda-role
+      Handler: hello.lambda
+      Runtime: go1.x
+      Timeout: 5
+      VpcConfig:
+        SecurityGroupIds:
+          - lambda::default
+        SubnetIds:
+          - test_private_subnet_a
+      Events:
+        CatchAll:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            RestApiId: !Ref helloAPI
+            Path: /hello
+            Method: GET
+
+Outputs:
+  ApiUrl:
+    Description: URL of your API endpoint
+    Value: !Sub "https://${helloAPI}.execute-api.${AWS::Region}.amazonaws.com/dev"
