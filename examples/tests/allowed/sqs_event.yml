@@ -12,7 +12,7 @@ Resources:
       Runtime: go1.x
       Timeout: 5
       Events:
-        Event:
+        queuelisten:
           Type: SQS
           Properties:
-            Queue: "asd"
+            Queue: "arn:aws:sqs:us-east-1:000000000000:test-queue"

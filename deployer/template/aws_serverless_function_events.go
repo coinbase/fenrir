@@ -98,8 +98,17 @@ func ValidateDynamoDBEvent(projectName, configName string, event *resources.AWSS
 }
 
 func ValidateSQSEvent(projectName, configName string, event *resources.AWSServerlessFunction_SQSEvent, sqsc aws.SQSAPI) error {
+	// event.Queue is ARN e.g. arn:aws:sqs:us-east-1:000000000000:test-queue
+	region, account, resource := to.ArnRegionAccountResource(event.Queue)
+	if region == "" || account == "" || resource == "" {
+		return fmt.Errorf("invalid SQS ARN")
+	}
+
+	// need URL e.g. https://sqs.us-east-1.amazonaws.com/000000000000/test-queue
+	queueURL := fmt.Sprintf("https://sqs.%v.amazonaws.com/%v/%v", region, account, resource)
+
 	out, err := sqsc.ListQueueTags(&sqs.ListQueueTagsInput{
-		QueueUrl: to.Strp(event.Queue),
+		QueueUrl: &queueURL,
 	})
 
 	if err != nil {
