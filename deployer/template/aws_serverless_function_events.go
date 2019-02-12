@@ -133,5 +133,9 @@ func hasEventTags(projectName, configName string, tags map[string]string) error 
 		return nil
 	}
 
+	if tags["FenrirAllowed:_all:_all"] != "" {
+		return nil
+	}
+
 	return fmt.Errorf("ProjectName (%v != %v) OR ConfigName (%v != %v) tags incorrect", tags["ProjectName"], projectName, tags["ConfigName"], configName)
 }
