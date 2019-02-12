@@ -72,15 +72,15 @@ func ValidateResource(prefix, projectName, configName, serviceName string, res i
 }) error {
 
 	if !(aws.HasProjectName(res, &projectName) || aws.HasAllValue(res.ProjectName())) {
-		return fmt.Errorf("Incorrect ProjectName for %v: has %q requires %q", prefix, *res.ProjectName(), projectName)
+		return fmt.Errorf("Incorrect ProjectName for %v: has %q requires %q", prefix, to.Strs(res.ProjectName()), projectName)
 	}
 
 	if !(aws.HasConfigName(res, &configName) || aws.HasAllValue(res.ConfigName())) {
-		return fmt.Errorf("Incorrect ConfigName for %v: has %q requires %q", prefix, *res.ConfigName(), configName)
+		return fmt.Errorf("Incorrect ConfigName for %v: has %q requires %q", prefix, to.Strs(res.ConfigName()), configName)
 	}
 
 	if !(aws.HasServiceName(res, &serviceName) || aws.HasAllValue(res.ServiceName())) {
-		return fmt.Errorf("Incorrect ServiceName for %v: has %q requires %q", prefix, *res.ServiceName(), serviceName)
+		return fmt.Errorf("Incorrect ServiceName for %v: has %q requires %q", prefix, to.Strs(res.ServiceName()), serviceName)
 	}
 
 	return nil

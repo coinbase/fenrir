@@ -100,11 +100,13 @@ The limitations are:
 
 **Supported Events**
 
+To be allowed to use referenced resources they require **correct tags**: These tags are `FenrirAllAllowed=true` OR have `FenrirAllowed:<project>:<config>=true` OR `ProjectName` and `ConfigName` tags equal to the releases.
+
 1. `Api`: It must have `RestApiId` that is a reference to a local API resource
-1. `S3`: `Bucket` must have `ProjectName` and `ConfigName` tags equal to the releases OR have `FenrirAllowed:<project>:<config>`.
-1. `Kinesis`: `Stream` must have `ProjectName` and `ConfigName` tags equal to the releases OR have `FenrirAllowed:<project>:<config>`.
-1. `DynamoDB`: `Stream` must have `ProjectName` and `ConfigName` tags equal to the releases OR have `FenrirAllowed:<project>:<config>`.
-1. `SQS`: `Queue` must have `ProjectName` and `ConfigName` tags equal to the releases OR have `FenrirAllowed:<project>:<config>`.
+1. `S3`: `Bucket` must have **correct tags**
+1. `Kinesis`: `Stream` must have **correct tags**
+1. `DynamoDB`: `Stream` must have **correct tags**
+1. `SQS`: `Queue` must have **correct tags**
 1. `Schedule`: Supported
 1. `CloudWatchEvent`: Supported
 

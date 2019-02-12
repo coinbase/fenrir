@@ -129,11 +129,11 @@ func hasEventTags(projectName, configName string, tags map[string]string) error 
 		return nil
 	}
 
-	if tags[fmt.Sprintf("FenrirAllowed:%v:%v", projectName, configName)] != "" {
+	if tags[fmt.Sprintf("FenrirAllowed:%v:%v", projectName, configName)] == "true" {
 		return nil
 	}
 
-	if tags["FenrirAllowed:_all:_all"] != "" {
+	if tags["FenrirAllAllowed"] == "true" {
 		return nil
 	}
 

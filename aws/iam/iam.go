@@ -41,11 +41,13 @@ func GetRole(iamc aws.IAMAPI, roleName *string) (*Role, error) {
 		Tags: map[string]*string{},
 	}
 
-	for _, tag := range out.Role.Tags {
-		if tag.Key == nil {
-			continue
+	if out.Role.Tags != nil {
+		for _, tag := range out.Role.Tags {
+			if tag.Key == nil {
+				continue
+			}
+			outRole.Tags[*tag.Key] = tag.Value
 		}
-		outRole.Tags[*tag.Key] = tag.Value
 	}
 
 	return &outRole, nil
