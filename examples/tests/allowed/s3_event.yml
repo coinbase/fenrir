@@ -12,7 +12,9 @@ Resources:
       Runtime: go1.x
       Timeout: 5
       Events:
-        Event:
+        s3Listen:
           Type: S3
           Properties:
             Bucket: bucket
+            Events:
+              - s3:ObjectCreated:*

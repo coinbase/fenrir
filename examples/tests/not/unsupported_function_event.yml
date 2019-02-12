@@ -8,12 +8,8 @@ Resources:
       Handler: hello-world
       Runtime: go1.x
       Role: role_correct
-      VpcConfig:
-        SecurityGroupIds:
-          - sg_correct
-        SubnetIds:
-          - subnet_correct
       Events:
         BadEvent:
-          Type: AlexaSkill
-          Properties: {}
+          Type: IoTRule
+          Properties:
+            Sql: "SELECT * FROM 'iot/test'"

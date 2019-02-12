@@ -4,6 +4,8 @@ github.com/aws/aws-lambda-go v1.8.1/go.mod h1:zUsUQhAUjYzR8AuduJPCfhBuKWUaDbQiPO
 github.com/aws/aws-sdk-go v1.16.3/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go v1.16.25 h1:qhhvqnAlhmd5g35oFvAwFQzIKeM63hsXB+FaX9DdKFo=
 github.com/aws/aws-sdk-go v1.16.25/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
+github.com/awslabs/goformation v1.2.1 h1:rJL88JtmINHnvWhMRSOXm6MebzaStKinOdLAX9Plek8=
+github.com/awslabs/goformation v1.2.1/go.mod h1:caLRalqRpGGTI7ZGd6Um+OmF8i45WaFJcVUSW4vaQ9w=
 github.com/coinbase/step v0.0.0-20190125125319-3fa470bba4bf h1:3KkX3vAy+IdEWbqWqtuuv257lTLQlanOf3NdWqiP+K8=
 github.com/coinbase/step v0.0.0-20190125125319-3fa470bba4bf/go.mod h1:XU8bLMHgXSiQu4+RZ2Gcgq5dlfPDBYQK4gvKJKnff6k=
 github.com/coinbase/step v1.0.1-beta h1:OX48iUl+qgVS7UO45fHJHn4nOJ9IOu15Z1W4Bb/ZBKM=
@@ -17,6 +19,10 @@ github.com/grahamjenson/goformation v1.2.2 h1:pMIFMg/5+gRQHjj0Hfu1/rMYkAJ5nBIIzM
 github.com/grahamjenson/goformation v1.2.2/go.mod h1:NRuZwGMQImxgOI68PUiMougy6HB5Bt6DfhMEsBZE//c=
 github.com/grahamjenson/goformation v1.2.3 h1:Jd8adonhv6xXj/ADlAHBXMXRMpVog+yfTc8h9ql3C5g=
 github.com/grahamjenson/goformation v1.2.3/go.mod h1:8FVQG600yKiq4VAOizBT+RfHC/P2vWyO90IGQceFWwI=
+github.com/grahamjenson/goformation v1.2.4 h1:IanLgaoq0+pifyfEw1OmTsQZ7AmZtLRHAygZhvqfJGE=
+github.com/grahamjenson/goformation v1.2.4/go.mod h1:8FVQG600yKiq4VAOizBT+RfHC/P2vWyO90IGQceFWwI=
+github.com/grahamjenson/goformation v1.2.5 h1:v7jWJLsYecsutEYeEaxAHr1NV8eM2UPifRQ99Rz0n18=
+github.com/grahamjenson/goformation v1.2.5/go.mod h1:8FVQG600yKiq4VAOizBT+RfHC/P2vWyO90IGQceFWwI=
 github.com/imdario/mergo v0.3.6/go.mod h1:2EnlNZ0deacrJVfApfmtdGgDfMuh/nq6Ok1EcJh5FfA=
 github.com/imdario/mergo v0.3.7 h1:Y+UAYTZ7gDEuOfhxKWy+dvb5dRQ6rJjFSdX2HZY1/gI=
 github.com/imdario/mergo v0.3.7/go.mod h1:2EnlNZ0deacrJVfApfmtdGgDfMuh/nq6Ok1EcJh5FfA=

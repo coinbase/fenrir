@@ -11,10 +11,10 @@ go install
 
 
 step bootstrap                         \
-  -lambda "coinbase-fenrir" \
-  -step "coinbase-fenrir"   \
+  -lambda "infra-fenrir" \
+  -step "infra-fenrir"   \
   -states "$(fenrir json)"\
-  -project "coinbase/fenrir"\
+  -project "infra/fenrir"\
   -config "development"
 
 rm lambda.zip

@@ -12,7 +12,9 @@ Resources:
       Runtime: go1.x
       Timeout: 5
       Events:
-        Event:
+        a:
           Type: DynamoDB
           Properties:
-            Stream: "asd"
+            StartingPosition: asd
+            BatchSize: 1
+            Stream: db

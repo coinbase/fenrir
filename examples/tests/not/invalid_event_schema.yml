@@ -15,5 +15,5 @@ Resources:
         Event:
           Type: Kinesis
           Properties:
-            Stream: arn:aws:kinesis:us-east-1:000000000000:stream/<stream-name>
-            StartingPosition: "LATEST"
+            Stream: "arn"
+            # Should have another property here

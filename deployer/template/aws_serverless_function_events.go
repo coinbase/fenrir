@@ -2,6 +2,7 @@ package template
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/kinesis"
@@ -48,8 +49,17 @@ func ValidateS3Event(projectName, configName string, event *resources.AWSServerl
 }
 
 func ValidateKinesisEvent(projectName, configName string, event *resources.AWSServerlessFunction_KinesisEvent, kinc aws.KINAPI) error {
+	//event.Stream is an arn e.g. arn:aws:kinesis:us-east-1:000000000000:stream/<stream-name>
+	_, _, resource := to.ArnRegionAccountResource(event.Stream)
+	// resource is the type/name e.g. "stream/<stream-name>""
+	typeName := strings.SplitN(resource, "/", 2)
+
+	if len(typeName) != 2 {
+		return fmt.Errorf("Stream incorrect ARN")
+	}
+
 	out, err := kinc.ListTagsForStream(&kinesis.ListTagsForStreamInput{
-		StreamName: to.Strp(event.Stream),
+		StreamName: to.Strp(typeName[1]),
 	})
 
 	if err != nil {
@@ -119,7 +129,7 @@ func hasEventTags(projectName, configName string, tags map[string]string) error 
 		return nil
 	}
 
-	if tags[fmt.Sprintf("FenrirAllowed(%v:%v)", projectName, configName)] != "" {
+	if tags[fmt.Sprintf("FenrirAllowed:%v:%v", projectName, configName)] != "" {
 		return nil
 	}
 
