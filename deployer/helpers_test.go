@@ -75,7 +75,7 @@ func MockAwsClients(release *Release) *mocks.MockClients {
 		// Good resources
 		awsc.EC2Client.AddSecurityGroup("sg_correct", *release.ProjectName, *release.ConfigName, "hello", nil)
 		awsc.EC2Client.AddSubnet("subnet_correct", "subnet-1", true)
-		awsc.IAMClient.AddGetRole("role_correct", *release.ProjectName, *release.ConfigName, "hello")
+		awsc.IAMClient.AddGetRole("role_correct", *release.ProjectName, *release.ConfigName, "_all")
 
 		// Event Resources
 		tags := map[string]string{"ProjectName": "project", "ConfigName": "development"}

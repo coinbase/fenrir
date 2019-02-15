@@ -25,30 +25,45 @@ func ValidateTemplateResources(
 	for name, a := range template.Resources {
 		switch a.AWSCloudFormationType() {
 		case "AWS::Serverless::Function":
-			for name, res := range template.GetAllAWSServerlessFunctionResources() {
-				if err := ValidateAWSServerlessFunction(projectName, configName, name, template, res, s3shas,
-					iamc, ec2c, s3c, kinc, ddbc, sqsc); err != nil {
-					return err
-				}
+			res, err := template.GetAWSServerlessFunctionWithName(name)
+			if err != nil {
+				return err
+			}
+
+			if err := ValidateAWSServerlessFunction(projectName, configName, name, template, res, s3shas,
+				iamc, ec2c, s3c, kinc, ddbc, sqsc); err != nil {
+				return err
 			}
 		case "AWS::Serverless::Api":
-			for name, res := range template.GetAllAWSServerlessApiResources() {
-				if err := ValidateAWSServerlessApi(projectName, configName, name, template, res, s3shas); err != nil {
-					return err
-				}
+			res, err := template.GetAWSServerlessApiWithName(name)
+			if err != nil {
+				return err
 			}
+
+			if err := ValidateAWSServerlessApi(projectName, configName, name, template, res, s3shas); err != nil {
+				return err
+			}
+
 		case "AWS::Serverless::LayerVersion":
-			for name, res := range template.GetAllAWSServerlessLayerVersionResources() {
-				if err := ValidateAWSServerlessLayerVersion(projectName, configName, name, template, res, s3shas); err != nil {
-					return err
-				}
+			res, err := template.GetAWSServerlessLayerVersionWithName(name)
+			if err != nil {
+				return err
 			}
+
+			if err := ValidateAWSServerlessLayerVersion(projectName, configName, name, template, res, s3shas); err != nil {
+				return err
+			}
+
 		case "AWS::Serverless::SimpleTable":
-			for name, res := range template.GetAllAWSServerlessSimpleTableResources() {
-				if err := ValidateAWSServerlessSimpleTable(projectName, configName, name, template, res); err != nil {
-					return err
-				}
+			res, err := template.GetAWSServerlessSimpleTableWithName(name)
+			if err != nil {
+				return err
 			}
+
+			if err := ValidateAWSServerlessSimpleTable(projectName, configName, name, template, res); err != nil {
+				return err
+			}
+
 		default:
 			return fmt.Errorf("Unsupported type %q for %q", a.AWSCloudFormationType(), name)
 		}

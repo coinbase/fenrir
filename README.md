@@ -142,6 +142,7 @@ There is always more to do:
 1. If changeset fails before execution, record the error and then delete the changeset.
 1. Support Security Group Ids or name tags
 1. Support Role Arns and Name Tags
+1. Layers should not include environment e.g. development, just configuration to be the same ARN across accounts
 
 ## More Links
 

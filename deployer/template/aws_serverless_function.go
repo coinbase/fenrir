@@ -26,7 +26,7 @@ func ValidateAWSServerlessFunction(
 ) error {
 
 	if fun.FunctionName != "" {
-		return resourceError(fun, resourceName, "Names are overwritten")
+		return resourceError(fun, resourceName, fmt.Sprintf("Names are overwritten, it is %v", fun.FunctionName))
 	}
 
 	// Forces Lambda name for no conflicts
