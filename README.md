@@ -83,51 +83,48 @@ With these in place you can now execute:
 
 ## Supported Resources
 
-Fenrir does not support all resources, or all properties for those resource. These limitations:
+Fenrir does not support all SAM resources or all properteis. Generally it limits all references resources (e.g. Security Groups, Subnets, S3, Kinesis) to have specific tags AND it forces good naming patterns to stop conflicts.
 
-1. Limit used resources to those with valid tags. This stops the use of resources a project is not allowed to use.
-2. Force the use of good practice, e.g. correct non-conflicting names.
+The specific resources that it supports, and their limitations are:
 
 ### AWS::Serverless::Function
 
-The limitations are:
-
-1. `FunctionName` is generated from the project, config, and lambda resource names
-1. `Role` must have the `ProjectName`, `ConfigName` same as the template, and `ServiceName` equal to the name of the Lambda resource.
+1. `FunctionName` is generated and cannot be defined.
+1. `Role` must have the tags `ProjectName`, `ConfigName` same as the template, and `ServiceName` equal to the name of the Lambda resource.
 1. `VPCConfig.SecurityGroupIds` Each SG must have the `ProjectName`, `ConfigName` same as the template, and `ServiceName` equal to the name of the Lambda resource.
-1. `VPCConfig.SubnetIds` must have the `DeployWithFenrir` tag equal to `true`
-1. `Events` are limited to certain `Type`'s and limitations
+1. `VPCConfig.SubnetIds` must have the `DeployWithFenrir` tag equal to `true`.
+1. `Events` supports certain `Type`'s and properties.
 
 **Supported Events**
 
-To be allowed to use referenced resources they require **correct tags**: These tags are `FenrirAllAllowed=true` OR have `FenrirAllowed:<project>:<config>=true` OR `ProjectName` and `ConfigName` tags equal to the releases.
+Not all event types and properties are supported. A general restriction is that referenced resources must have  **correct tags**: These tags are `FenrirAllAllowed=true` OR have `FenrirAllowed:<project>:<config>=true` OR `ProjectName` and `ConfigName` tags equal to the releases.
 
 1. `Api`: It must have `RestApiId` that is a reference to a local API resource
 1. `S3`: `Bucket` must have **correct tags**
 1. `Kinesis`: `Stream` must have **correct tags**
 1. `DynamoDB`: `Stream` must have **correct tags**
 1. `SQS`: `Queue` must have **correct tags**
-1. `Schedule`: Supported
-1. `CloudWatchEvent`: Supported
+1. `Schedule`: generally supported
+1. `CloudWatchEvent`: generally supported
 
 ### AWS::Serverless::Api
 
 The limitations are:
 
-1. `Name` is generated from the project, config, and API resource names
-1. `EndpointConfiguration` is defaulted to `PRIVATE`
+1. `Name` is generated and cannot be defined
+1. `EndpointConfiguration` defaults to `PRIVATE`
 
 ### AWS::Serverless::LayerVersion
 
 The limitations are:
 
-1. `LayerName` is generated from the project, config, and API resource names
+1. `LayerName` is generated and cannot be defined
 
 ### AWS::Serverless::SimpleTable
 
 The limitations are:
 
-1. `TableName` is generated from the project, config, and API resource names
+1. `TableName` is generated and cannot be defined
 
 
 ## Fenrir Deployer
@@ -140,10 +137,11 @@ Fenrir is a [Bifrost Step Function](https://github.com/coinbase/bifrost) reimple
 
 There is always more to do:
 
+1. Auto add common sense Outputs
+1. S3 Static site uploader
 1. If changeset fails before execution, record the error and then delete the changeset.
 1. Support Security Group Ids or name tags
 1. Support Role Arns and Name Tags
-1. Auto add common sense Outputs
 
 ## More Links
 

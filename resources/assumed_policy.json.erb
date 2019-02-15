@@ -1,20 +1,35 @@
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "cloudformation:*",
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": "lambda:*",
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": "apigateway:*",
-      "Effect": "Allow",
-      "Resource": "*"
-    }
-  ]
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CloudFormationCreate",
+            "Effect": "Allow",
+            "Action": [
+                "iam:GetRole",
+                "iam:PassRole",
+
+                "ec2:DescribeSubnets",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeVpcs",
+
+                "kinesis:ListTagsForStream",
+                "sqs:ListQueueTags",
+                "s3:GetBucketTagging",
+
+                "lambda:*",
+                "apigateway:*",
+                "cloudformation:*",
+                "events:*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "S3",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject*"
+            ],
+            "Resource": "arn:aws:s3:::infra-fenrir-<%= env.account_id %>/<%= env.account_id %>/*"
+        }
+    ]
 }
