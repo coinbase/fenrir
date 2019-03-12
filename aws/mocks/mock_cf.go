@@ -11,19 +11,35 @@ import (
 // CFClient returns
 type CFClient struct {
 	aws.CFAPI
+	StackResp *cloudformation.DescribeStacksOutput
+	ChangeSet *cloudformation.DescribeChangeSetOutput
+	DeleteStackCalled bool
 }
 
-func (m *CFClient) init() {}
+func (m *CFClient) init() {
+	if m.StackResp == nil {
+		m.StackResp = &cloudformation.DescribeStacksOutput{
+			Stacks: []*cloudformation.Stack{
+				&cloudformation.Stack{
+					StackStatus:  to.Strp("CREATE_COMPLETE"),
+					CreationTime: to.Timep(time.Now()),
+				},
+			},
+		}
+	}
+
+	if m.ChangeSet == nil {
+		m.ChangeSet = &cloudformation.DescribeChangeSetOutput{
+			Status:          to.Strp("CREATE_COMPLETE"),
+			ExecutionStatus: to.Strp("AVAILABLE"),
+		}
+	}
+}
 
 // DescribeStacks returns
 func (m *CFClient) DescribeStacks(in *cloudformation.DescribeStacksInput) (*cloudformation.DescribeStacksOutput, error) {
-	return &cloudformation.DescribeStacksOutput{
-		Stacks: []*cloudformation.Stack{
-			&cloudformation.Stack{
-				StackStatus: to.Strp("CREATE_COMPLETE"),
-			},
-		},
-	}, nil
+	m.init()
+	return m.StackResp, nil
 }
 
 // DescribeStacks returns
@@ -36,12 +52,16 @@ func (m *CFClient) ExecuteChangeSet(in *cloudformation.ExecuteChangeSetInput) (*
 	return nil, nil
 }
 
+// DeleteStack returns
+func (m *CFClient) DeleteStack(in *cloudformation.DeleteStackInput) (*cloudformation.DeleteStackOutput, error) {
+	m.DeleteStackCalled = true
+	return nil, nil
+}
+
 // DescribeChangeSet returns
 func (m *CFClient) DescribeChangeSet(in *cloudformation.DescribeChangeSetInput) (*cloudformation.DescribeChangeSetOutput, error) {
-	return &cloudformation.DescribeChangeSetOutput{
-		Status:          to.Strp("CREATE_COMPLETE"),
-		ExecutionStatus: to.Strp("AVAILABLE"),
-	}, nil
+	m.init()
+	return m.ChangeSet, nil
 }
 
 func (m *CFClient) DescribeStackEvents(in *cloudformation.DescribeStackEventsInput) (*cloudformation.DescribeStackEventsOutput, error) {

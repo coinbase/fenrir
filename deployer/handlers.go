@@ -128,7 +128,10 @@ func UpdateStack(awsc aws.Clients) DeployHandler {
 func CleanUp(awsc aws.Clients) DeployHandler {
 	return func(_ context.Context, release *Release) (*Release, error) {
 
+		release.Success = to.Boolp(false)
+
 		if err := release.CleanUp(
+			awsc.S3(nil, nil, nil),
 			awsc.CF(release.AwsRegion, release.AwsAccountID, assumedRole),
 		); err != nil {
 			return nil, &errors.CleanUpError{err.Error()}

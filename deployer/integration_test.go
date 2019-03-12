@@ -2,7 +2,10 @@ package deployer
 
 import (
 	"testing"
+	"time"
 
+	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/coinbase/step/utils/to"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -128,4 +131,81 @@ func Test_Unsuccessful_Execution(t *testing.T) {
 			assert.Regexp(t, test.ErrorStr, errStr)
 		})
 	}
+}
+
+func Test_Unsuccessful_ChangeSetOnNewStack(t *testing.T) {
+	release, err := MockRelease("../examples/tests/allowed/function.yml")
+	assert.NoError(t, err)
+
+	awsc := MockAwsClients(release)
+
+	// Failed To create changeset
+	awsc.CFClient.ChangeSet = &cloudformation.DescribeChangeSetOutput{
+		Status:          to.Strp("FAILED"),
+		ExecutionStatus: to.Strp("UNAVAILABLE"),
+	}
+
+	// No Stacks means the stack is created
+	awsc.CFClient.StackResp = &cloudformation.DescribeStacksOutput{Stacks: []*cloudformation.Stack{}}
+
+	stateMachine := createTestStateMachine(t, awsc)
+
+	exec, err := stateMachine.Execute(release)
+	output := exec.LastOutput
+
+	assert.Equal(t, false, output["success"])
+	assert.NotRegexp(t, "error", exec.LastOutputJSON)
+
+	assert.Equal(t, []string{
+		"Validate",
+		"Lock",
+		"CreateChangeSet",
+		"WaitForChangeSet",
+		"UpdateChangeSet",
+		"Execute?",
+		"ReleaseLock",
+		"Success?",
+		"CleanUp",
+		"FailureClean",
+	}, exec.Path())
+}
+
+func Test_Unsuccessful_ExecuteChangeSet(t *testing.T) {
+	release, err := MockRelease("../examples/tests/allowed/function.yml")
+	assert.NoError(t, err)
+
+	awsc := MockAwsClients(release)
+
+	// No Stacks means the stack is created
+	awsc.CFClient.StackResp = &cloudformation.DescribeStacksOutput{Stacks: []*cloudformation.Stack{
+		&cloudformation.Stack{
+			StackStatus:  to.Strp("CREATE_FAILED"),
+			CreationTime: to.Timep(time.Now()),
+		},
+	}}
+
+	stateMachine := createTestStateMachine(t, awsc)
+
+	exec, err := stateMachine.Execute(release)
+	output := exec.LastOutput
+
+	assert.Equal(t, false, output["success"])
+	assert.NotRegexp(t, "error", exec.LastOutputJSON)
+
+	assert.Equal(t, []string{
+		"Validate",
+		"Lock",
+		"CreateChangeSet",
+		"WaitForChangeSet",
+		"UpdateChangeSet",
+		"Execute?",
+		"Execute",
+		"WaitForComplete",
+		"UpdateStack",
+		"Complete?",
+		"ReleaseLock",
+		"Success?",
+		"CleanUp",
+		"FailureClean",
+	}, exec.Path())
 }

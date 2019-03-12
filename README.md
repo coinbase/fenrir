@@ -2,7 +2,7 @@
 
 <img src="./assets/logo.png" align="right" alt="Odin" />
 
-Fenrir is a secure AWS SAM deployer with a CLI. If you are looking at scaling AWS SAM to being used in a large organization, or just want easier structured deploys for your own projects. Fenrir is a great and easy way to take the next step with SAM.
+Fenrir is a secure AWS SAM deployer with a CLI. If you are looking at scaling AWS SAM to being used in a large organization, or just want easier structured deploys for your own projects. Fenrir is a great and easy way to take the next step with serverless.
 
 Fenrir:
 
@@ -83,7 +83,7 @@ With these in place you can now execute:
 
 ## Supported Resources
 
-Fenrir does not support all SAM resources or all properteis. Generally it limits all references resources (e.g. Security Groups, Subnets, S3, Kinesis) to have specific tags AND it forces good naming patterns to stop conflicts.
+Fenrir does not support all SAM resources or all properties. Generally it limits all references resources (e.g. Security Groups, Subnets, S3, Kinesis) to have specific tags AND it forces good naming patterns to stop conflicts.
 
 The specific resources that it supports, and their limitations are:
 
@@ -93,19 +93,16 @@ The specific resources that it supports, and their limitations are:
 1. `Role` must have the tags `ProjectName`, `ConfigName` same as the template, and `ServiceName` equal to the name of the Lambda resource.
 1. `VPCConfig.SecurityGroupIds` Each SG must have the `ProjectName`, `ConfigName` same as the template, and `ServiceName` equal to the name of the Lambda resource.
 1. `VPCConfig.SubnetIds` must have the `DeployWithFenrir` tag equal to `true`.
-1. `Events` supports certain `Type`'s and properties.
+1. `Events` supported `Type`s and their limitations are:
+	1. `Api`: It must have `RestApiId` that is a reference to a local API resource
+	1. `S3`: `Bucket` must have *correct tags*<sup>*</sup>
+	1. `Kinesis`: `Stream` must have *correct tags*<sup>*</sup>
+	1. `DynamoDB`: `Stream` must have *correct tags*<sup>*</sup>
+	1. `SQS`: `Queue` must have *correct tags*<sup>*</sup>
+	1. `Schedule`
+	1. `CloudWatchEvent`
 
-**Supported Events**
-
-Not all event types and properties are supported. A general restriction is that referenced resources must have  **correct tags**: These tags are `FenrirAllAllowed=true` OR have `FenrirAllowed:<project>:<config>=true` OR `ProjectName` and `ConfigName` tags equal to the releases.
-
-1. `Api`: It must have `RestApiId` that is a reference to a local API resource
-1. `S3`: `Bucket` must have **correct tags**
-1. `Kinesis`: `Stream` must have **correct tags**
-1. `DynamoDB`: `Stream` must have **correct tags**
-1. `SQS`: `Queue` must have **correct tags**
-1. `Schedule`: generally supported
-1. `CloudWatchEvent`: generally supported
+<sup>*</sup>: *correct tags* means tags are `FenrirAllAllowed=true` OR have `FenrirAllowed:<project>:<config>=true` OR `ProjectName` and `ConfigName` tags equal to the release.
 
 ### AWS::Serverless::Api
 

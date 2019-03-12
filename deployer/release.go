@@ -45,7 +45,7 @@ type Release struct {
 	// or empty_string as it is used in a choice block
 	StackStatus string `json:"stack_status"`
 
-	StackCreationTime *time.Time `json:"stack_creation_time,omitempty"`
+	StackCreationTime *time.Time `json:"stack_creation_time,omitempty"` // Can be nil
 	StackStatusReason *string    `json:"stack_status_reason,omitempty"`
 
 	LogSummary *string `json:"log_summary,omitempty"`
@@ -171,6 +171,8 @@ func (release *Release) ValidateTemplate(ec2c aws.EC2API, iamc aws.IAMAPI, s3c a
 //////////
 
 func (release *Release) SetDefaults(region *string, account *string) {
+	release.Success = to.Boolp(false)
+
 	if release.Timeout == nil {
 		release.Timeout = to.Intp(300) // Default to 5 mins
 	}
@@ -289,6 +291,10 @@ func (release *Release) FetchStack(s3c aws.S3API, cfc aws.CFAPI) error {
 		}
 	}
 
+	return release.updateStack(s3c, cfc, stack)
+}
+
+func (release *Release) updateStack(s3c aws.S3API, cfc aws.CFAPI, stack *cloudformation.Stack) error {
 	if stack.StackStatus != nil {
 		release.StackStatus = *stack.StackStatus
 	}
@@ -356,9 +362,29 @@ func (release *Release) Execute(cfc aws.CFAPI) error {
 // CleanUpStuckStack checks to see if we need to delete the stack on create failure
 // We have to be very careful in this method as we DO NOT want to accidentally delete a stack
 // because of https://github.com/awslabs/aws-cdk/issues/901
-func (release *Release) CleanUp(cfc aws.CFAPI) error {
+func (release *Release) CleanUp(s3c aws.S3API, cfc aws.CFAPI) error {
 	if release.ChangeSetType == nil || *release.ChangeSetType != "CREATE" {
 		return nil
+	}
+
+	// Make sure the stack exists and update the
+	stack, err := cf.DescribeStack(cfc, release.StackName)
+
+	if err != nil {
+		switch err.(type) {
+		case cf.NotFoundError:
+			return nil // Doesn't exist no neet to delete
+		default:
+			return err
+		}
+	}
+
+	if err := release.updateStack(s3c, cfc, stack); err != nil {
+		return err
+	}
+
+	if release.StackCreationTime == nil {
+		return nil // Extra paranoid
 	}
 
 	// This is to doubly make sure we are good to delete
@@ -372,9 +398,6 @@ func (release *Release) CleanUp(cfc aws.CFAPI) error {
 		return nil
 	}
 
+	// DANGEROUS: should only get here if lots of checks pass
 	return cf.DeleteStack(cfc, release.StackName)
 }
-
-// func (release *Release) Halt(cfc aws.CFAPI) error {
-// 	CancelUpdateStack
-// }
