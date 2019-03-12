@@ -2,8 +2,10 @@ package deployer
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/coinbase/fenrir/aws"
+	"github.com/coinbase/step/bifrost"
 	"github.com/coinbase/step/errors"
 	"github.com/coinbase/step/utils/to"
 )
@@ -135,6 +137,23 @@ func CleanUp(awsc aws.Clients) DeployHandler {
 			awsc.CF(release.AwsRegion, release.AwsAccountID, assumedRole),
 		); err != nil {
 			return nil, &errors.CleanUpError{err.Error()}
+		}
+
+		// Add Error if if can be found
+		if release.Error == nil {
+			cause := ""
+			if release.ChangeSetStatusReason != "" {
+				cause += fmt.Sprintf("changeset: %s", release.ChangeSetStatusReason)
+			}
+
+			if release.StackStatusReason != "" && release.StackStatusReason != "User Initiated"{
+				cause += fmt.Sprintf(":: stack: %s", release.StackStatusReason)
+			}
+
+			release.Error = &bifrost.ReleaseError{
+				Error: to.Strp("Failed"),
+				Cause: &cause,
+			}
 		}
 
 		return release, nil

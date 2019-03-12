@@ -143,6 +143,7 @@ func Test_Unsuccessful_ChangeSetOnNewStack(t *testing.T) {
 	awsc.CFClient.ChangeSet = &cloudformation.DescribeChangeSetOutput{
 		Status:          to.Strp("FAILED"),
 		ExecutionStatus: to.Strp("UNAVAILABLE"),
+		StatusReason:    to.Strp("AllBroke"),
 	}
 
 	// No Stacks means the stack is created
@@ -154,7 +155,8 @@ func Test_Unsuccessful_ChangeSetOnNewStack(t *testing.T) {
 	output := exec.LastOutput
 
 	assert.Equal(t, false, output["success"])
-	assert.NotRegexp(t, "error", exec.LastOutputJSON)
+	assert.Regexp(t, "error", exec.LastOutputJSON)
+	assert.Regexp(t, "AllBroke", exec.LastOutputJSON)
 
 	assert.Equal(t, []string{
 		"Validate",
@@ -190,7 +192,7 @@ func Test_Unsuccessful_ExecuteChangeSet(t *testing.T) {
 	output := exec.LastOutput
 
 	assert.Equal(t, false, output["success"])
-	assert.NotRegexp(t, "error", exec.LastOutputJSON)
+	assert.Regexp(t, "error", exec.LastOutputJSON)
 
 	assert.Equal(t, []string{
 		"Validate",

@@ -37,6 +37,7 @@ type Release struct {
 
 	// ChangeSetStatus enum CREATE_IN_PROGRESS, CREATE_COMPLETE, or FAILED
 	ChangeSetStatus string `json:"change_set_status,omitempty"`
+	ChangeSetStatusReason string `json:"change_set_status_reason,omitempty"`
 
 	// ChangeSetExecutionStatus enum AVAILABLE, UNAVAILABLE, OBSOLETE
 	ChangeSetExecutionStatus string `json:"change_set_execution_status,omitempty"`
@@ -46,7 +47,7 @@ type Release struct {
 	StackStatus string `json:"stack_status"`
 
 	StackCreationTime *time.Time `json:"stack_creation_time,omitempty"` // Can be nil
-	StackStatusReason *string    `json:"stack_status_reason,omitempty"`
+	StackStatusReason string    `json:"stack_status_reason,omitempty"`
 
 	LogSummary *string `json:"log_summary,omitempty"`
 
@@ -272,6 +273,10 @@ func (release *Release) FetchChangeSet(cfc aws.CFAPI) error {
 		release.ChangeSetExecutionStatus = *output.ExecutionStatus
 	}
 
+	if output.StatusReason != nil {
+		release.ChangeSetStatusReason = *output.StatusReason
+	}
+
 	return nil
 }
 
@@ -311,7 +316,10 @@ func (release *Release) updateStack(s3c aws.S3API, cfc aws.CFAPI, stack *cloudfo
 		}
 	}
 
-	release.StackStatusReason = stack.StackStatusReason
+	if stack.StackStatusReason != nil {
+		release.StackStatusReason = *stack.StackStatusReason
+	}
+
 
 	output, err := cfc.DescribeStackEvents(&cloudformation.DescribeStackEventsInput{StackName: release.StackName})
 	if err != nil || output == nil || output.StackEvents == nil {
@@ -335,6 +343,10 @@ func (release *Release) updateStack(s3c aws.S3API, cfc aws.CFAPI, stack *cloudfo
 			to.Strs(e.LogicalResourceId),
 			to.Strs(e.ResourceStatusReason),
 		)
+	}
+
+	if release.ChangeSetStatus == "FAILED" && release.ChangeSetStatusReason != "" {
+		log += fmt.Sprintf("%s\n", release.ChangeSetStatusReason)
 	}
 
 	// Attach log to release and write to file
@@ -393,8 +405,8 @@ func (release *Release) CleanUp(s3c aws.S3API, cfc aws.CFAPI) error {
 		return nil
 	}
 
-	if release.StackStatus != "ROLLBACK_COMPLETE" {
-		// Stack Status must be completely rolled back
+	if !(release.ChangeSetExecutionStatus == "UNAVAILABLE" || release.StackStatus == "ROLLBACK_COMPLETE") {
+		// ChangeSet must be failed or Stack Status must be rolled back
 		return nil
 	}
 
