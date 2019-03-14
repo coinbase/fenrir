@@ -15,17 +15,6 @@ func Package(releaseFile *string) error {
 		return err
 	}
 
-	// fmt.Println("Executing pwd")
-	// cmd := exec.Command("pwd")
-	// fmt.Println(cmd.Args)
-	// if err := cmd.Run(); err != nil {
-	// 	return err
-	// }
-	// fmt.Println(cmd.Dir)
-	// fmt.Println(cmd.Stdout)
-	// fmt.Println("pwd")
-
-	// docker build . -t release.ProjectName
 	buildTag := strings.ToLower(to.RandomString(8))
 	err = execute("docker", "build", "-t", buildTag, ".")
 	if err != nil {

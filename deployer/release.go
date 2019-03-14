@@ -17,8 +17,8 @@ import (
 	"github.com/coinbase/step/utils/to"
 	"github.com/xeipuuv/gojsonschema"
 
-	gocf "github.com/grahamjenson/goformation/cloudformation"
-	"github.com/grahamjenson/goformation/schema"
+	gocf "github.com/awslabs/goformation/cloudformation"
+	"github.com/awslabs/goformation/schema"
 )
 
 type Release struct {

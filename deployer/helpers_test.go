@@ -11,9 +11,9 @@ import (
 	"github.com/coinbase/step/bifrost"
 	"github.com/coinbase/step/machine"
 	"github.com/coinbase/step/utils/to"
-	"github.com/grahamjenson/goformation"
-	"github.com/grahamjenson/goformation/cloudformation"
-	"github.com/grahamjenson/goformation/intrinsics"
+	"github.com/awslabs/goformation"
+	"github.com/awslabs/goformation/cloudformation"
+	"github.com/awslabs/goformation/intrinsics"
 	"github.com/stretchr/testify/assert"
 )
 

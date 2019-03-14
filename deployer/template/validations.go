@@ -7,7 +7,7 @@ import (
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/fenrir/aws/subnet"
 	"github.com/coinbase/step/utils/to"
-	"github.com/grahamjenson/goformation/cloudformation"
+	"github.com/awslabs/goformation/cloudformation"
 )
 
 func ValidateTemplateResources(

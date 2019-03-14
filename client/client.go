@@ -7,15 +7,15 @@ import (
 	"time"
 
 	"github.com/coinbase/step/utils/is"
-	"github.com/grahamjenson/goformation/intrinsics"
+	"github.com/awslabs/goformation/intrinsics"
 
 	"github.com/coinbase/fenrir/deployer"
 	"github.com/coinbase/step/bifrost"
 	"github.com/coinbase/step/execution"
 	"github.com/coinbase/step/utils/to"
 
-	"github.com/grahamjenson/goformation"
-	"github.com/grahamjenson/goformation/cloudformation"
+	"github.com/awslabs/goformation"
+	"github.com/awslabs/goformation/cloudformation"
 	"github.com/sanathkr/yaml"
 )
 

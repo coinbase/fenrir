@@ -1,8 +1,8 @@
 package template
 
 import (
-	"github.com/grahamjenson/goformation/cloudformation"
-	"github.com/grahamjenson/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/cloudformation"
+	"github.com/awslabs/goformation/cloudformation/resources"
 )
 
 // AWS::Serverless::SimpleTable

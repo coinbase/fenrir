@@ -10,8 +10,8 @@ import (
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/step/aws/s3"
 	"github.com/coinbase/step/utils/to"
-	"github.com/grahamjenson/goformation/cloudformation"
-	"github.com/grahamjenson/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/cloudformation"
+	"github.com/awslabs/goformation/cloudformation/resources"
 )
 
 func ValidateAPIEvent(template *cloudformation.Template, event *resources.AWSServerlessFunction_ApiEvent) error {
