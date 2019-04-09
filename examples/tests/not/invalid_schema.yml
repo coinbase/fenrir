@@ -1,0 +1,12 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Hello SAM
+
+Resources:
+  hello:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: role_correct
+      Handler: hello.lambda
+      Runtime: go1.x
+      Timeout: 5

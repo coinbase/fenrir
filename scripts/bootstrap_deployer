@@ -1,0 +1,20 @@
+#!/bin/bash
+# bootstrap bifrost
+# assume-role to the correct account
+set -e
+
+go build . # Build for your operating system
+go install
+
+# Build linux lambda for upload
+./scripts/build_lambda_zip
+
+
+step bootstrap                         \
+  -lambda "coinbase-fenrir" \
+  -step "coinbase-fenrir"   \
+  -states "$(fenrir json)"\
+  -project "coinbase/fenrir"\
+  -config "development"
+
+rm lambda.zip

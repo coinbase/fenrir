@@ -1,0 +1,13 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  CompleteLayer:
+    Type: 'AWS::Serverless::LayerVersion'
+    Properties:
+      ContentUri: s3://bucket/path.zip
+      Description: Starter Lambda Layer
+      CompatibleRuntimes:
+        - python3.6
+        - python2.7
+      LicenseInfo: "License information"
+      RetentionPolicy: Retain

@@ -1,0 +1,24 @@
+#!/bin/bash
+# This package creates the cloudformation template, lambda zip and uses cloudformation to deploy
+set -e
+
+if ! hash aws 2>/dev/null; then
+  echo "Script requires 'aws' to be installed"
+  exit 1
+fi
+
+S3BUCKET=$1
+if [ -z "$S3BUCKET" ]; then
+	echo "1st argument S3 Bucket no defined"
+	exit 1
+fi
+
+# reformat from step format to CloudFormation
+STATES=$(go run fenrir.go json | tr '\n' ' ' | sed -e 's/{{aws_region}}/${AWS::Region}/g' | sed -e 's/{{aws_account}}/${AWS::AccountId}/g' | sed -e 's/{{lambda_name}}/coinbase-fenrir/g')
+cat ./scripts/fenrir_cf_template.yml | sed -e "s/{{FENRIR_STATES}}/$(echo $STATES)/g" > template.yml
+./scripts/build_lambda_zip
+
+aws cloudformation package --template-file template.yml --s3-bucket $S3BUCKET --output-template-file packaged-template.yml --force-upload
+aws cloudformation deploy --capabilities CAPABILITY_NAMED_IAM --template-file packaged-template.yml --stack-name coinbase-fenrir
+
+aws iam tag-role --role-name default@lambda --tags '[{"Key":"ProjectName","Value":"_all", "Key":"ConfigName","Value":"_all", "Key":"ServiceName","Value":"_all"}]'

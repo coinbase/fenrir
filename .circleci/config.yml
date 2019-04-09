@@ -1,0 +1,11 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.11
+    working_directory: /go/src/github.com/coinbase/fenrir
+    steps:
+      - checkout
+      - run: export GO111MODULE=on && go mod download
+      - run: export GO111MODULE=on && go test ./...
+

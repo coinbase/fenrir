@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Hello SAM
+
+Resources:
+  hello:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://bucket/path.zip
+      Role: role_correct
+      Handler: hello.lambda
+      Runtime: go1.x
+      Timeout: 5
+      Events:
+        s3Listen:
+          Type: S3
+          Properties:
+            Bucket: bucket
+            Events:
+              - s3:ObjectCreated:*
+            Filter:
+              S3Key: "asd"
+

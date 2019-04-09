@@ -1,0 +1,17 @@
+.DS_Store
+step.zip
+step
+lambda
+lambda.zip
+template.yml
+packaged-template.yml
+tmp
+coverage.out
+coverage.html
+vendor
+bifrost
+*.zip
+.vscode
+
+# build example executables with .lambda to ignore
+*.lambda

@@ -1,0 +1,148 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: 'AWS::Serverless-2016-10-31'
+Description: "Fenrir Cloud Deployer"
+
+Resources:
+  ###
+  # S3 Bucket
+  ###
+  FenrirBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      AccessControl: Private
+      BucketName: !Sub coinbase-fenrir-${AWS::AccountId}
+  ###
+  # IAM Roles
+  ###
+  # default lambda role
+  DefaultLambdaRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: default@lambda
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: default-lambda-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Resource: "arn:aws:logs:*:*:log-group:/aws/lambda/*"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+  # Lambda
+  FenrirLambdaRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: coinbase-fenrir-lambda-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: coinbase-fenrir-lambda-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Resource: "arn:aws:iam::*:role/coinbase-fenrir-assumed"
+                Action: "sts:AssumeRole"
+              - Effect: "Allow"
+                Action:
+                  - "s3:GetObject*"
+                  - "s3:PutObject*"
+                  - "s3:DeleteObject*"
+                  - "s3:ListBucket"
+                Resource:
+                  - !Sub "arn:aws:s3:::coinbase-fenrir-${AWS::AccountId}/*"
+                  - !GetAtt FenrirBucket.Arn
+              - Effect: "Deny"
+                Action:
+                  - "s3:*"
+                NotResource:
+                  - !Sub "arn:aws:s3:::coinbase-fenrir-${AWS::AccountId}/*"
+                  - !GetAtt FenrirBucket.Arn
+  # Step Function
+  FenrirStepRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: coinbase-fenrir-step-function-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: states.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: coinbase-fenrir-step-function-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: "lambda:InvokeFunction"
+                Resource: !GetAtt FenrirLambdaFunction.Arn
+  # Assumed (lives in all accounts Fenrir can deploy to)
+  FenrirAssumedRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: coinbase-fenrir-assumed
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              AWS: !GetAtt FenrirLambdaRole.Arn
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: coinbase-fenrir-assumed-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "iam:GetRole"
+                  - "iam:PassRole"
+                  - "apigateway:*"
+                  - "s3:*"
+                  - "lambda:*"
+                  - "cloudformation:*"
+                  - "ec2:*"
+                  - "ec2:DescribeSubnets"
+                  - "ec2:DescribeInstances"
+                  - "ec2:CreateNetworkInterface"
+                  - "ec2:AttachNetworkInterface"
+                  - "ec2:DescribeNetworkInterfaces"
+                  - "autoscaling:CompleteLifecycleAction"
+                Resource: "*"
+
+  ###
+  # Lambda Function
+  ###
+  FenrirLambdaFunction:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      FunctionName: "coinbase-fenrir"
+      Handler: lambda
+      Role: !GetAtt FenrirLambdaRole.Arn
+      CodeUri: "./lambda.zip"
+      Runtime: "go1.x"
+      Timeout: 30
+
+  # Step Function
+  FenrirStepFunction:
+    Type: "AWS::StepFunctions::StateMachine"
+    Properties:
+      StateMachineName: coinbase-fenrir
+      DefinitionString: !Sub '{{FENRIR_STATES}}'
+      RoleArn: !GetAtt FenrirStepRole.Arn

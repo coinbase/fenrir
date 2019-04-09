@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  hello:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello-world/
+      Handler: hello-world
+      Runtime: go1.x
+      Role: role_correct
+      Events:
+        BadEvent:
+          Type: IoTRule
+          Properties:
+            Sql: "SELECT * FROM 'iot/test'"
