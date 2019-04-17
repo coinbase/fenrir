@@ -117,9 +117,9 @@ func normalizeName(prefix, projectName, configName, resourceName string, maxLeng
 	if (len(str) > maxLength) {
 		digest := sha1.Sum([]byte(str))
 
-		// Truncate to 64 characters
-		// Use first 56 chars of the name, and 8 from hash to prevent conflicts
-		str = fmt.Sprintf("%s%x", str[:56], digest[:4])
+		// Truncate to `maxLength` characters
+		// Replace the last 8 characters with a digest (4 bytes = 8 hex chars)
+		str = fmt.Sprintf("%s%x", str[:maxLength - 8], digest[:4])
 	}
 
 	return str

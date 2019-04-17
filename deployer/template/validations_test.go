@@ -17,4 +17,7 @@ func TestNormalizeName(t *testing.T) {
 	assert.NotEqual(t, norm, norm2)
 	assert.Equal(t, len(norm), 64)
 	assert.Equal(t, len(norm2), 64)
+
+	norm = normalizeName("prefix", "project", "config", "long-resource-name-over-64-characters-limit", 48)
+	assert.Equal(t, len(norm), 48)
 }
