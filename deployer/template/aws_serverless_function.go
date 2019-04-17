@@ -30,7 +30,7 @@ func ValidateAWSServerlessFunction(
 	}
 
 	// Forces Lambda name for no conflicts
-	fun.FunctionName = normalizeName("fenrir", projectName, configName, resourceName)
+	fun.FunctionName = normalizeName("fenrir", projectName, configName, resourceName, 64)
 
 	if fun.Tags == nil {
 		fun.Tags = map[string]string{}

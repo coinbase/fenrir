@@ -18,7 +18,7 @@ func ValidateAWSServerlessApi(
 		return resourceError(res, resourceName, "Names are overwritten")
 	}
 
-	res.Name = normalizeName("fenrir", projectName, configName, resourceName)
+	res.Name = normalizeName("fenrir", projectName, configName, resourceName, 128)
 
 	// Change the default to private because DEFAULT PRIVATE
 	if res.EndpointConfiguration == "" {

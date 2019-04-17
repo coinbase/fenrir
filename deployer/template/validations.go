@@ -3,6 +3,7 @@ package template
 import (
 	"fmt"
 	"strings"
+	"crypto/sha1"
 
 	"github.com/awslabs/goformation/cloudformation"
 	"github.com/coinbase/fenrir/aws"
@@ -109,9 +110,17 @@ func strA(strl []string) []*string {
 	return stra
 }
 
-func normalizeName(prefix, projectName, configName, resourceName string) string {
+func normalizeName(prefix, projectName, configName, resourceName string, maxLength int) string {
 	str := fmt.Sprintf("%v-%v-%v-%v", prefix, projectName, configName, resourceName)
 	str = strings.Replace(str, "/", "-", -1)
+
+	if (len(str) > maxLength) {
+		digest := sha1.Sum([]byte(str))
+
+		// Truncate to `maxLength` characters
+		// Replace the last 8 characters with a digest (4 bytes = 8 hex chars)
+		str = fmt.Sprintf("%s%x", str[:maxLength - 8], digest[:4])
+	}
 
 	return str
 }
