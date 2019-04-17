@@ -110,13 +110,12 @@ func strA(strl []string) []*string {
 	return stra
 }
 
-func normalizeName(prefix, projectName, configName, resourceName string) string {
+func normalizeName(prefix, projectName, configName, resourceName string, maxLength int) string {
 	str := fmt.Sprintf("%v-%v-%v-%v", prefix, projectName, configName, resourceName)
 	str = strings.Replace(str, "/", "-", -1)
 
-	if (len(str) > 64) {
-		h := sha1.New()
-		digest := h.Sum([]byte(str))
+	if (len(str) > maxLength) {
+		digest := sha1.Sum([]byte(str))
 
 		// Truncate to 64 characters
 		// Use first 56 chars of the name, and 8 from hash to prevent conflicts

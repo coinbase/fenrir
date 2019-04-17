@@ -20,7 +20,7 @@ func ValidateAWSServerlessLayerVersion(
 		return resourceError(res, resourceName, "Names are overwritten")
 	}
 
-	res.LayerName = normalizeName("layer", projectName, configName, resourceName)
+	res.LayerName = normalizeName("layer", projectName, configName, resourceName, 64)
 
 	if res.ContentUri == "" {
 		return resourceError(res, resourceName, "ContentUri is empty")
