@@ -78,8 +78,11 @@ func ValidateKinesisEvent(projectName, configName string, event *resources.AWSSe
 }
 
 func ValidateDynamoDBEvent(projectName, configName string, event *resources.AWSServerlessFunction_DynamoDBEvent, ddbc aws.DDBAPI) error {
+	// we want to check the tags on the table itself, streams do not have tags
+	dynamodbStreamName := strings.SplitN(event.Stream, "/stream", 3)[0]
+
 	out, err := ddbc.ListTagsOfResource(&dynamodb.ListTagsOfResourceInput{
-		ResourceArn: to.Strp(event.Stream),
+		ResourceArn: to.Strp(dynamodbStreamName),
 	})
 
 	if err != nil {
