@@ -23,6 +23,7 @@ func ValidateAWSServerlessFunction(
 	kinc aws.KINAPI,
 	ddbc aws.DDBAPI,
 	sqsc aws.SQSAPI,
+	snsc aws.SNSAPI,
 ) error {
 
 	if fun.FunctionName != "" {
@@ -82,6 +83,10 @@ func ValidateAWSServerlessFunction(
 		case "SQS":
 			if err := ValidateSQSEvent(projectName, configName, event.Properties.SQSEvent, sqsc); err != nil {
 				return resourceError(fun, resourceName, fmt.Sprintf("SQS Event %q %v", eventName, err.Error()))
+			}
+		case "SNS":
+			if err := ValidateSNSEvent(projectName, configName, fun.Role, event.Properties.SNSEvent, snsc); err != nil {
+				return resourceError(fun, resourceName, fmt.Sprintf("SNS Event %q %v", eventName, err.Error()))
 			}
 		case "Schedule":
 			if err := ValidateScheduleEvent(event.Properties.ScheduleEvent); err != nil {

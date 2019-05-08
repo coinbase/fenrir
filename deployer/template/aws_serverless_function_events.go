@@ -1,11 +1,13 @@
 package template
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/kinesis"
+	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/awslabs/goformation/cloudformation"
 	"github.com/awslabs/goformation/cloudformation/resources"
@@ -124,6 +126,82 @@ func ValidateSQSEvent(projectName, configName string, event *resources.AWSServer
 	}
 
 	return hasEventTags(projectName, configName, tags)
+}
+
+type PolicyDocument struct {
+	Version   string
+	Statement []StatementEntry
+}
+
+type StatementEntry struct {
+	Effect    string
+	Action    []string
+	Resource  string
+	Principal PrincipalEntry
+}
+
+type PrincipalEntry struct {
+	AWS interface{}
+}
+
+func ValidateSNSEvent(projectName, configName string, roleArn string, event *resources.AWSServerlessFunction_SNSEvent, snsc aws.SNSAPI) error {
+	// event.Topic is ARN e.g. arn:aws:sns:us-east-1:000000000000:test-topic
+	region, account, resource := to.ArnRegionAccountResource(event.Topic)
+	if region == "" || account == "" || resource == "" {
+		return fmt.Errorf("invalid SNS ARN")
+	}
+
+	out, err := snsc.GetTopicAttributes(&sns.GetTopicAttributesInput{
+		TopicArn: &event.Topic,
+	})
+	if err != nil {
+		return err
+	}
+
+	var policy PolicyDocument
+	err = json.Unmarshal([]byte(*out.Attributes["Policy"]), &policy)
+	if err != nil {
+		return err
+	}
+
+	// We want to allow subscriptions for any lambda with the specified role, as long
+	// as the role is specified in the topic's access policy principals.
+	for _, entry := range policy.Statement {
+		valid := false
+		for _, action := range entry.Action {
+			if strings.ToLower(action) == "sns:subscribe" {
+				valid = true
+			}
+		}
+
+		if !valid {
+			continue
+		}
+
+		var principals []string
+
+		switch entry.Principal.AWS.(type) {
+		case string:
+			principals = []string{entry.Principal.AWS.(string)}
+		case []interface{}:
+			principalInters := entry.Principal.AWS.([]interface{})
+
+			for _, inter := range principalInters {
+				principal, ok := inter.(string)
+				if ok {
+					principals = append(principals, principal)
+				}
+			}
+		}
+
+		for _, principal := range principals {
+			if roleArn == principal {
+				return nil
+			}
+		}
+	}
+
+	return fmt.Errorf("sns access policy does not include principal: %s", roleArn)
 }
 
 func ValidateScheduleEvent(event *resources.AWSServerlessFunction_ScheduleEvent) error {
