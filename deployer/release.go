@@ -141,7 +141,7 @@ func (release *Release) ValidateSchema() error {
 }
 
 // Resource Validations
-func (release *Release) ValidateTemplate(ec2c aws.EC2API, iamc aws.IAMAPI, s3c aws.S3API, kinc aws.KINAPI, ddbc aws.DDBAPI, sqsc aws.SQSAPI) error {
+func (release *Release) ValidateTemplate(ec2c aws.EC2API, iamc aws.IAMAPI, s3c aws.S3API, kinc aws.KINAPI, ddbc aws.DDBAPI, sqsc aws.SQSAPI, snsc aws.SNSAPI) error {
 	// Disabling some template objects because their interations might be
 	if release.Template.Parameters != nil {
 		return fmt.Errorf("Unsupported Parameters")
@@ -160,7 +160,7 @@ func (release *Release) ValidateTemplate(ec2c aws.EC2API, iamc aws.IAMAPI, s3c a
 	}
 
 	if err := template.ValidateTemplateResources(*release.ProjectName, *release.ConfigName, release.Template, release.S3URISHA256s,
-		iamc, ec2c, s3c, kinc, ddbc, sqsc); err != nil {
+		iamc, ec2c, s3c, kinc, ddbc, sqsc, snsc); err != nil {
 		return err
 	}
 
