@@ -3,12 +3,13 @@ package template
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/kinesis"
-	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/aws/aws-sdk-go/service/sns"
+	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/awslabs/goformation/cloudformation"
 	"github.com/awslabs/goformation/cloudformation/resources"
 	"github.com/coinbase/fenrir/aws"
@@ -169,7 +170,7 @@ func ValidateSNSEvent(projectName, configName string, roleArn string, event *res
 	for _, entry := range policy.Statement {
 		valid := false
 		for _, action := range entry.Action {
-			if action == "sns:Subscribe" {
+			if strings.ToLower(action) == "sns:subscribe" {
 				valid = true
 			}
 		}
@@ -183,8 +184,15 @@ func ValidateSNSEvent(projectName, configName string, roleArn string, event *res
 		switch entry.Principal.AWS.(type) {
 		case string:
 			principals = []string{entry.Principal.AWS.(string)}
-		case []string:
-			principals = entry.Principal.AWS.([]string)
+		case []interface{}:
+			principalInters := entry.Principal.AWS.([]interface{})
+
+			for _, inter := range principalInters {
+				principal, ok := inter.(string)
+				if ok {
+					principals = append(principals, principal)
+				}
+			}
 		}
 
 		for _, principal := range principals {
