@@ -1,9 +1,9 @@
 package template
 
 import (
+	"crypto/sha1"
 	"fmt"
 	"strings"
-	"crypto/sha1"
 
 	"github.com/awslabs/goformation/cloudformation"
 	"github.com/coinbase/fenrir/aws"
@@ -66,6 +66,26 @@ func ValidateTemplateResources(
 				return err
 			}
 
+		case "AWS::DynamoDB::Table":
+			res, err := template.GetAWSDynamoDBTableWithName(name)
+			if err != nil {
+				return err
+			}
+
+			if err := ValidateAWSDynamoDBTable(projectName, configName, name, template, res); err != nil {
+				return err
+			}
+
+		case "AWS::SQS::Queue":
+			res, err := template.GetAWSSQSQueueWithName(name)
+			if err != nil {
+				return err
+			}
+
+			if err := ValidateAWSSQSQueue(projectName, configName, name, template, res); err != nil {
+				return err
+			}
+
 		default:
 			return fmt.Errorf("Unsupported type %q for %q", a.AWSCloudFormationType(), name)
 		}
@@ -115,12 +135,12 @@ func normalizeName(prefix, projectName, configName, resourceName string, maxLeng
 	str := fmt.Sprintf("%v-%v-%v-%v", prefix, projectName, configName, resourceName)
 	str = strings.Replace(str, "/", "-", -1)
 
-	if (len(str) > maxLength) {
+	if len(str) > maxLength {
 		digest := sha1.Sum([]byte(str))
 
 		// Truncate to `maxLength` characters
 		// Replace the last 8 characters with a digest (4 bytes = 8 hex chars)
-		str = fmt.Sprintf("%s%x", str[:maxLength - 8], digest[:4])
+		str = fmt.Sprintf("%s%x", str[:maxLength-8], digest[:4])
 	}
 
 	return str
