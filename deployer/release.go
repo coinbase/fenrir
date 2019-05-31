@@ -141,7 +141,15 @@ func (release *Release) ValidateSchema() error {
 }
 
 // Resource Validations
-func (release *Release) ValidateTemplate(ec2c aws.EC2API, iamc aws.IAMAPI, s3c aws.S3API, kinc aws.KINAPI, ddbc aws.DDBAPI, sqsc aws.SQSAPI) error {
+func (release *Release) ValidateTemplate(
+	ec2c aws.EC2API,
+	iamc aws.IAMAPI,
+	s3c aws.S3API,
+	kinc aws.KINAPI,
+	ddbc aws.DDBAPI,
+	sqsc aws.SQSAPI,
+	kmsc aws.KMSAPI,
+) error {
 	// Disabling some template objects because their interations might be
 	if release.Template.Parameters != nil {
 		return fmt.Errorf("Unsupported Parameters")
@@ -159,8 +167,8 @@ func (release *Release) ValidateTemplate(ec2c aws.EC2API, iamc aws.IAMAPI, s3c a
 		return fmt.Errorf("Unsupported Metadata")
 	}
 
-	if err := template.ValidateTemplateResources(*release.ProjectName, *release.ConfigName, release.Template, release.S3URISHA256s,
-		iamc, ec2c, s3c, kinc, ddbc, sqsc); err != nil {
+	if err := template.ValidateTemplateResources(*release.ProjectName, *release.ConfigName, *release.AwsAccountID, release.Template, release.S3URISHA256s,
+		iamc, ec2c, s3c, kinc, ddbc, sqsc, kmsc); err != nil {
 		return err
 	}
 
@@ -233,7 +241,7 @@ func (release *Release) CreateChangeSetInput() (*cloudformation.CreateChangeSetI
 		Description:   to.Strp("Fenrir deploy"),
 		StackName:     release.StackName,
 		ChangeSetType: release.ChangeSetType,
-
+		Capabilities:  []*string{to.Strp("CAPABILITY_IAM")},
 		Tags: []*cloudformation.Tag{
 			&cloudformation.Tag{Key: to.Strp("ProjectName"), Value: release.ProjectName},
 			&cloudformation.Tag{Key: to.Strp("ConfigName"), Value: release.ConfigName},

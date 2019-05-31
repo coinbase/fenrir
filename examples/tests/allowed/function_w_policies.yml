@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  hello:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://bucket/path.zip
+      Handler: hello-world
+      Runtime: go1.x
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref Table
+      - LambdaInvokePolicy:
+          FunctionName: !Ref hello
+      - VPCAccessPolicy: {}
+      - KMSDecryptPolicy:
+          KeyId: "alias"
+  Table:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String

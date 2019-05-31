@@ -18,6 +18,7 @@ var goodReleases = []string{
 	"../examples/tests/allowed/api.yml",
 	"../examples/tests/allowed/function.yml",
 	"../examples/tests/allowed/function_api.yml",
+	"../examples/tests/allowed/function_w_policies.yml",
 	"../examples/tests/allowed/layer.yml",
 	"../examples/tests/allowed/table.yml",
 	"../examples/tests/allowed/s3_event.yml",
@@ -34,7 +35,6 @@ func Test_Successful_Execution(t *testing.T) {
 
 		t.Run(releaseFile, func(t *testing.T) {
 			release, err := MockRelease(releaseFile)
-
 			assert.NoError(t, err)
 			assertSuccessfulExecution(t, release)
 		})
@@ -57,6 +57,18 @@ var badFiles = []struct {
 	{
 		File:     "../examples/tests/not/bad_function_name.yml",
 		ErrorStr: "AWS::Serverless::Function#hello: Names are overwritten",
+	},
+	{
+		File:     "../examples/tests/not/bad_function_policies_refs.yml",
+		ErrorStr: "AWS::Serverless::Function#hello: Policies.DynamoDBCrudPolicy.TableName must be !Ref",
+	},
+	{
+		File:     "../examples/tests/not/bad_function_policies_role.yml",
+		ErrorStr: "AWS::Serverless::Function#hello: Must define Role XOR Policies",
+	},
+	{
+		File:     "../examples/tests/not/bad_function_policies_unsupported.yml",
+		ErrorStr: "AWS::Serverless::Function#hello: Policies: Unsupported SAMPolicyTemplate",
 	},
 	{
 		File:     "../examples/tests/not/bad_role.yml",

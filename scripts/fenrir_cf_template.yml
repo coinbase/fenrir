@@ -92,6 +92,21 @@ Resources:
               - Effect: Allow
                 Action: "lambda:InvokeFunction"
                 Resource: !GetAtt FenrirLambdaFunction.Arn
+  # FenrirPermissionsBoundary (lives in all accounts Fenrir can deploy to)
+  FenrirPermissionsBoundary:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: fenrir-permissions-boundary
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Sid: DenyIamActions
+          Effect: Deny
+          NotAction:
+          - iam:GetRole
+          - iam:PassRole
+          Resource: "*"
+
   # Assumed (lives in all accounts Fenrir can deploy to)
   FenrirAssumedRole:
     Type: "AWS::IAM::Role"
@@ -113,8 +128,12 @@ Resources:
                 Action:
                   - "iam:GetRole"
                   - "iam:PassRole"
+                  - "iam:CreateRole"
+                  - "iam:PutRolePermissionsBoundary"
+                  - "iam:PutUserPermissionsBoundary"
                   - "apigateway:*"
                   - "s3:*"
+                  - "dynamodb:*"
                   - "lambda:*"
                   - "cloudformation:*"
                   - "ec2:*"
@@ -124,6 +143,8 @@ Resources:
                   - "ec2:AttachNetworkInterface"
                   - "ec2:DescribeNetworkInterfaces"
                   - "autoscaling:CompleteLifecycleAction"
+                  - "kms:DescribeKey"
+                  - "kms:ListResourceTags"
                 Resource: "*"
 
   ###

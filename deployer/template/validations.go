@@ -11,7 +11,7 @@ import (
 )
 
 func ValidateTemplateResources(
-	projectName, configName string,
+	projectName, configName, accountId string,
 	template *cloudformation.Template,
 	s3shas map[string]string,
 	iamc aws.IAMAPI,
@@ -20,6 +20,7 @@ func ValidateTemplateResources(
 	kinc aws.KINAPI,
 	ddbc aws.DDBAPI,
 	sqsc aws.SQSAPI,
+	kmsc aws.KMSAPI,
 ) error {
 
 	for name, a := range template.Resources {
@@ -30,8 +31,8 @@ func ValidateTemplateResources(
 				return err
 			}
 
-			if err := ValidateAWSServerlessFunction(projectName, configName, name, template, res, s3shas,
-				iamc, ec2c, s3c, kinc, ddbc, sqsc); err != nil {
+			if err := ValidateAWSServerlessFunction(projectName, configName, accountId, name, template, res, s3shas,
+				iamc, ec2c, s3c, kinc, ddbc, sqsc, kmsc); err != nil {
 				return err
 			}
 		case "AWS::Serverless::Api":
@@ -99,6 +100,22 @@ func ValidateResource(prefix, projectName, configName, serviceName string, res i
 	}
 
 	return nil
+}
+
+func hasCorrectTags(projectName, configName string, tags map[string]string) error {
+	if tags["ProjectName"] == projectName && tags["ConfigName"] == configName {
+		return nil
+	}
+
+	if tags[fmt.Sprintf("FenrirAllowed:%v:%v", projectName, configName)] == "true" {
+		return nil
+	}
+
+	if tags["FenrirAllAllowed"] == "true" {
+		return nil
+	}
+
+	return fmt.Errorf("ProjectName (%v != %v) OR ConfigName (%v != %v) tags incorrect", tags["ProjectName"], projectName, tags["ConfigName"], configName)
 }
 
 func strA(strl []string) []*string {

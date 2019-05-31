@@ -3,7 +3,7 @@ step.zip
 step
 lambda
 lambda.zip
-template.yml
+/template.yml
 packaged-template.yml
 tmp
 coverage.out

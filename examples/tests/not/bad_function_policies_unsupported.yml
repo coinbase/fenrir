@@ -1,0 +1,12 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  hello:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello-world/
+      Handler: hello-world
+      Runtime: go1.x
+      Policies:
+      - VPCAccessPolicy: {}
+      - EC2DescribePolicy: {} # Not allowed this policy

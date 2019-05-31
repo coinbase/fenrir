@@ -45,7 +45,7 @@ func ValidateS3Event(projectName, configName string, event *resources.AWSServerl
 		return err
 	}
 
-	return hasEventTags(projectName, configName, tags)
+	return hasCorrectTags(projectName, configName, tags)
 }
 
 func ValidateKinesisEvent(projectName, configName string, event *resources.AWSServerlessFunction_KinesisEvent, kinc aws.KINAPI) error {
@@ -74,7 +74,7 @@ func ValidateKinesisEvent(projectName, configName string, event *resources.AWSSe
 		tags[*tag.Key] = to.Strs(tag.Value)
 	}
 
-	return hasEventTags(projectName, configName, tags)
+	return hasCorrectTags(projectName, configName, tags)
 }
 
 func ValidateDynamoDBEvent(projectName, configName string, event *resources.AWSServerlessFunction_DynamoDBEvent, ddbc aws.DDBAPI) error {
@@ -94,7 +94,7 @@ func ValidateDynamoDBEvent(projectName, configName string, event *resources.AWSS
 		tags[*tag.Key] = to.Strs(tag.Value)
 	}
 
-	return hasEventTags(projectName, configName, tags)
+	return hasCorrectTags(projectName, configName, tags)
 }
 
 func ValidateSQSEvent(projectName, configName string, event *resources.AWSServerlessFunction_SQSEvent, sqsc aws.SQSAPI) error {
@@ -120,7 +120,7 @@ func ValidateSQSEvent(projectName, configName string, event *resources.AWSServer
 		tags[key] = to.Strs(value)
 	}
 
-	return hasEventTags(projectName, configName, tags)
+	return hasCorrectTags(projectName, configName, tags)
 }
 
 func ValidateScheduleEvent(event *resources.AWSServerlessFunction_ScheduleEvent) error {
@@ -131,20 +131,4 @@ func ValidateScheduleEvent(event *resources.AWSServerlessFunction_ScheduleEvent)
 func ValidateCloudWatchEventEvent(event *resources.AWSServerlessFunction_CloudWatchEventEvent) error {
 	// Allowed any
 	return nil
-}
-
-func hasEventTags(projectName, configName string, tags map[string]string) error {
-	if tags["ProjectName"] == projectName && tags["ConfigName"] == configName {
-		return nil
-	}
-
-	if tags[fmt.Sprintf("FenrirAllowed:%v:%v", projectName, configName)] == "true" {
-		return nil
-	}
-
-	if tags["FenrirAllAllowed"] == "true" {
-		return nil
-	}
-
-	return fmt.Errorf("ProjectName (%v != %v) OR ConfigName (%v != %v) tags incorrect", tags["ProjectName"], projectName, tags["ConfigName"], configName)
 }

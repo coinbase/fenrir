@@ -10,8 +10,11 @@ github.com/awslabs/goformation v0.0.0-20190313220143-83ac785f2084 h1:0enyp9aRu4P
 github.com/awslabs/goformation v0.0.0-20190313220143-83ac785f2084/go.mod h1:HezUyH08DSwwGn3GioVXWZYUhkdvC+oGJ7ya7vBRm7k=
 github.com/awslabs/goformation v0.0.0-20190320113110-1ca24a54e8dd h1:Q3Tn2b5yc7sWwTzFV/kxlpIw/IerRBOVYGc3snJOcVY=
 github.com/awslabs/goformation v0.0.0-20190320113110-1ca24a54e8dd/go.mod h1:HezUyH08DSwwGn3GioVXWZYUhkdvC+oGJ7ya7vBRm7k=
+github.com/awslabs/goformation v0.0.0-20190531130853-2a2f4ad6a946 h1:zyeI4cBtFmIiF1pJ+ytA4XfHqI9bZ7GpgK4Hzsy0g4Q=
+github.com/awslabs/goformation v0.0.0-20190531130853-2a2f4ad6a946/go.mod h1:HezUyH08DSwwGn3GioVXWZYUhkdvC+oGJ7ya7vBRm7k=
 github.com/coinbase/odin v0.0.0-20190227002606-a765a8a47a22 h1:RHNhqLqWY8F+twM0U5w15JEy3gv/PAHbx+moXcieamQ=
 github.com/coinbase/odin v0.0.0-20190227002606-a765a8a47a22/go.mod h1:VRuE5cxnCEhdc0T2f/LyqDD7kj1IAQAbshy9LtQRkM4=
+github.com/coinbase/step v0.0.0-20190408131218-9f799639d07c h1:1Eu05EjTKaiEhGQpJPB+piCXqGRu1TGQuobv+i5CLdA=
 github.com/coinbase/step v0.0.0-20190408131218-9f799639d07c/go.mod h1:XU8bLMHgXSiQu4+RZ2Gcgq5dlfPDBYQK4gvKJKnff6k=
 github.com/coinbase/step v1.0.1-beta h1:OX48iUl+qgVS7UO45fHJHn4nOJ9IOu15Z1W4Bb/ZBKM=
 github.com/coinbase/step v1.0.1-beta/go.mod h1:XU8bLMHgXSiQu4+RZ2Gcgq5dlfPDBYQK4gvKJKnff6k=
