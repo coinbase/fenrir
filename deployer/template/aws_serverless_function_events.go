@@ -1,15 +1,18 @@
 package template
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/kinesis"
+	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/awslabs/goformation/cloudformation"
 	"github.com/awslabs/goformation/cloudformation/resources"
 	"github.com/coinbase/fenrir/aws"
+	"github.com/coinbase/fenrir/aws/iam"
 	"github.com/coinbase/step/aws/s3"
 	"github.com/coinbase/step/utils/to"
 )
@@ -78,8 +81,11 @@ func ValidateKinesisEvent(projectName, configName string, event *resources.AWSSe
 }
 
 func ValidateDynamoDBEvent(projectName, configName string, event *resources.AWSServerlessFunction_DynamoDBEvent, ddbc aws.DDBAPI) error {
+	// we want to check the tags on the table itself, streams do not have tags
+	dynamodbStreamName := strings.SplitN(event.Stream, "/stream", 3)[0]
+
 	out, err := ddbc.ListTagsOfResource(&dynamodb.ListTagsOfResourceInput{
-		ResourceArn: to.Strp(event.Stream),
+		ResourceArn: to.Strp(dynamodbStreamName),
 	})
 
 	if err != nil {
@@ -121,6 +127,51 @@ func ValidateSQSEvent(projectName, configName string, event *resources.AWSServer
 	}
 
 	return hasCorrectTags(projectName, configName, tags)
+}
+
+func ValidateSNSEvent(projectName, configName string, roleArn string, event *resources.AWSServerlessFunction_SNSEvent, snsc aws.SNSAPI) error {
+	// event.Topic is ARN e.g. arn:aws:sns:us-east-1:000000000000:test-topic
+	region, account, resource := to.ArnRegionAccountResource(event.Topic)
+	if region == "" || account == "" || resource == "" {
+		return fmt.Errorf("invalid SNS ARN")
+	}
+
+	out, err := snsc.GetTopicAttributes(&sns.GetTopicAttributesInput{
+		TopicArn: &event.Topic,
+	})
+	if err != nil {
+		return err
+	}
+
+	var policy iam.PolicyDocument
+	err = json.Unmarshal([]byte(*out.Attributes["Policy"]), &policy)
+	if err != nil {
+		return err
+	}
+
+	// We want to allow subscriptions for any lambda with the specified role, as long
+	// as the role is specified in the topic's access policy principals.
+	for _, entry := range policy.Statement {
+		valid := false
+
+		for _, action := range entry.NormalizedAction() {
+			if strings.ToLower(action) == "sns:subscribe" {
+				valid = true
+			}
+		}
+
+		if !valid {
+			continue
+		}
+
+		for _, principal := range entry.Principal.NormalizedAWS() {
+			if roleArn == principal {
+				return nil
+			}
+		}
+	}
+
+	return fmt.Errorf("sns access policy does not include principal: %s", roleArn)
 }
 
 func ValidateScheduleEvent(event *resources.AWSServerlessFunction_ScheduleEvent) error {

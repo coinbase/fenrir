@@ -21,7 +21,7 @@ func ValidateAWSServerlessSimpleTable(
 		return resourceError(res, resourceName, "Names are overwritten")
 	}
 
-	res.TableName = normalizeName("fenrir", projectName, configName, resourceName)
+	res.TableName = normalizeName("fenrir", projectName, configName, resourceName, 255)
 
 	return nil
 }

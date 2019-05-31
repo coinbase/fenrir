@@ -22,6 +22,7 @@ var goodReleases = []string{
 	"../examples/tests/allowed/layer.yml",
 	"../examples/tests/allowed/table.yml",
 	"../examples/tests/allowed/s3_event.yml",
+	"../examples/tests/allowed/sns_event.yml",
 	"../examples/tests/allowed/sqs_event.yml",
 	"../examples/tests/allowed/kinesis_event.yml",
 	"../examples/tests/allowed/dynamo_event.yml",

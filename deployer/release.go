@@ -148,6 +148,7 @@ func (release *Release) ValidateTemplate(
 	kinc aws.KINAPI,
 	ddbc aws.DDBAPI,
 	sqsc aws.SQSAPI,
+	snsc aws.SNSAPI,
 	kmsc aws.KMSAPI,
 ) error {
 	// Disabling some template objects because their interations might be
@@ -168,7 +169,7 @@ func (release *Release) ValidateTemplate(
 	}
 
 	if err := template.ValidateTemplateResources(*release.ProjectName, *release.ConfigName, *release.AwsAccountID, release.Template, release.S3URISHA256s,
-		iamc, ec2c, s3c, kinc, ddbc, sqsc, kmsc); err != nil {
+		iamc, ec2c, s3c, kinc, ddbc, sqsc, snsc, kmsc); err != nil {
 		return err
 	}
 

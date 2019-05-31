@@ -1,6 +1,7 @@
 package template
 
 import (
+	"crypto/sha1"
 	"fmt"
 	"strings"
 
@@ -20,6 +21,7 @@ func ValidateTemplateResources(
 	kinc aws.KINAPI,
 	ddbc aws.DDBAPI,
 	sqsc aws.SQSAPI,
+	snsc aws.SNSAPI,
 	kmsc aws.KMSAPI,
 ) error {
 
@@ -32,7 +34,7 @@ func ValidateTemplateResources(
 			}
 
 			if err := ValidateAWSServerlessFunction(projectName, configName, accountId, name, template, res, s3shas,
-				iamc, ec2c, s3c, kinc, ddbc, sqsc, kmsc); err != nil {
+				iamc, ec2c, s3c, kinc, ddbc, sqsc, snsc, kmsc); err != nil {
 				return err
 			}
 		case "AWS::Serverless::Api":
@@ -126,9 +128,17 @@ func strA(strl []string) []*string {
 	return stra
 }
 
-func normalizeName(prefix, projectName, configName, resourceName string) string {
+func normalizeName(prefix, projectName, configName, resourceName string, maxLength int) string {
 	str := fmt.Sprintf("%v-%v-%v-%v", prefix, projectName, configName, resourceName)
 	str = strings.Replace(str, "/", "-", -1)
+
+	if len(str) > maxLength {
+		digest := sha1.Sum([]byte(str))
+
+		// Truncate to `maxLength` characters
+		// Replace the last 8 characters with a digest (4 bytes = 8 hex chars)
+		str = fmt.Sprintf("%s%x", str[:maxLength-8], digest[:4])
+	}
 
 	return str
 }

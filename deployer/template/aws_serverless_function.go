@@ -24,6 +24,7 @@ func ValidateAWSServerlessFunction(
 	kinc aws.KINAPI,
 	ddbc aws.DDBAPI,
 	sqsc aws.SQSAPI,
+	snsc aws.SNSAPI,
 	kmsc aws.KMSAPI,
 ) error {
 
@@ -32,7 +33,7 @@ func ValidateAWSServerlessFunction(
 	}
 
 	// Forces Lambda name for no conflicts
-	fun.FunctionName = normalizeName("fenrir", projectName, configName, resourceName)
+	fun.FunctionName = normalizeName("fenrir", projectName, configName, resourceName, 64)
 
 	if fun.Tags == nil {
 		fun.Tags = map[string]string{}
@@ -52,7 +53,7 @@ func ValidateAWSServerlessFunction(
 		}
 	}
 
-	if err := ValidateFunctionEvents(template, projectName, configName, resourceName, fun, s3c, kinc, ddbc, sqsc); err != nil {
+	if err := ValidateFunctionEvents(template, projectName, configName, resourceName, fun, s3c, kinc, ddbc, sqsc, snsc); err != nil {
 		return err
 	}
 
@@ -170,6 +171,7 @@ func ValidateFunctionEvents(
 	kinc aws.KINAPI,
 	ddbc aws.DDBAPI,
 	sqsc aws.SQSAPI,
+	snsc aws.SNSAPI,
 ) error {
 	// Support and Validate These Events
 	// S3 SNS Kinesis DynamoDB SQS Api Schedule CloudWatchEvent CloudWatchLogs IoTRule AlexaSkill
@@ -194,6 +196,10 @@ func ValidateFunctionEvents(
 		case "SQS":
 			if err := ValidateSQSEvent(projectName, configName, event.Properties.SQSEvent, sqsc); err != nil {
 				return resourceError(fun, resourceName, fmt.Sprintf("SQS Event %q %v", eventName, err.Error()))
+			}
+		case "SNS":
+			if err := ValidateSNSEvent(projectName, configName, fun.Role, event.Properties.SNSEvent, snsc); err != nil {
+				return resourceError(fun, resourceName, fmt.Sprintf("SNS Event %q %v", eventName, err.Error()))
 			}
 		case "Schedule":
 			if err := ValidateScheduleEvent(event.Properties.ScheduleEvent); err != nil {
