@@ -126,11 +126,7 @@ Resources:
             Statement:
               - Effect: "Allow"
                 Action:
-                  - "iam:GetRole"
-                  - "iam:PassRole"
-                  - "iam:CreateRole"
-                  - "iam:PutRolePermissionsBoundary"
-                  - "iam:PutUserPermissionsBoundary"
+                  - "iam:*"
                   - "apigateway:*"
                   - "s3:*"
                   - "dynamodb:*"
