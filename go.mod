@@ -12,3 +12,5 @@ require (
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xeipuuv/gojsonschema v1.1.0
 )
+
+replace github.com/awslabs/goformation => github.com/grahamjenson/goformation v1.2.2-0.20190531130853-2a2f4ad6a946
