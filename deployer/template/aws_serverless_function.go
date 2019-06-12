@@ -13,7 +13,7 @@ import (
 )
 
 func ValidateAWSServerlessFunction(
-	projectName, configName, resourceName string,
+	projectName, configName, region, accountId, resourceName string,
 	template *cloudformation.Template,
 	fun *resources.AWSServerlessFunction,
 	s3shas map[string]string,
@@ -85,7 +85,7 @@ func ValidateAWSServerlessFunction(
 				return resourceError(fun, resourceName, fmt.Sprintf("SQS Event %q %v", eventName, err.Error()))
 			}
 		case "SNS":
-			if err := ValidateSNSEvent(projectName, configName, fun.Role, event.Properties.SNSEvent, snsc); err != nil {
+			if err := ValidateSNSEvent(projectName, configName, region, accountId, event.Properties.SNSEvent, snsc); err != nil {
 				return resourceError(fun, resourceName, fmt.Sprintf("SNS Event %q %v", eventName, err.Error()))
 			}
 		case "Schedule":

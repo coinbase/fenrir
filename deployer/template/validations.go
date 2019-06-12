@@ -1,9 +1,9 @@
 package template
 
 import (
+	"crypto/sha1"
 	"fmt"
 	"strings"
-	"crypto/sha1"
 
 	"github.com/awslabs/goformation/cloudformation"
 	"github.com/coinbase/fenrir/aws"
@@ -12,7 +12,7 @@ import (
 )
 
 func ValidateTemplateResources(
-	projectName, configName string,
+	projectName, configName, region, accountId string,
 	template *cloudformation.Template,
 	s3shas map[string]string,
 	iamc aws.IAMAPI,
@@ -32,7 +32,9 @@ func ValidateTemplateResources(
 				return err
 			}
 
-			if err := ValidateAWSServerlessFunction(projectName, configName, name, template, res, s3shas,
+			if err := ValidateAWSServerlessFunction(
+				projectName, configName, region, accountId, name,
+				template, res, s3shas,
 				iamc, ec2c, s3c, kinc, ddbc, sqsc, snsc); err != nil {
 				return err
 			}
@@ -115,12 +117,12 @@ func normalizeName(prefix, projectName, configName, resourceName string, maxLeng
 	str := fmt.Sprintf("%v-%v-%v-%v", prefix, projectName, configName, resourceName)
 	str = strings.Replace(str, "/", "-", -1)
 
-	if (len(str) > maxLength) {
+	if len(str) > maxLength {
 		digest := sha1.Sum([]byte(str))
 
 		// Truncate to `maxLength` characters
 		// Replace the last 8 characters with a digest (4 bytes = 8 hex chars)
-		str = fmt.Sprintf("%s%x", str[:maxLength - 8], digest[:4])
+		str = fmt.Sprintf("%s%x", str[:maxLength-8], digest[:4])
 	}
 
 	return str
