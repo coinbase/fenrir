@@ -166,19 +166,3 @@ func ValidateCloudWatchEventEvent(event *resources.AWSServerlessFunction_CloudWa
 	// Allowed any
 	return nil
 }
-
-func hasCorrectTags(projectName, configName string, tags map[string]string) error {
-	if tags["ProjectName"] == projectName && tags["ConfigName"] == configName {
-		return nil
-	}
-
-	if tags[fmt.Sprintf("FenrirAllowed:%v:%v", projectName, configName)] == "true" {
-		return nil
-	}
-
-	if tags["FenrirAllAllowed"] == "true" {
-		return nil
-	}
-
-	return fmt.Errorf("ProjectName (%v != %v) OR ConfigName (%v != %v) tags incorrect", tags["ProjectName"], projectName, tags["ConfigName"], configName)
-}

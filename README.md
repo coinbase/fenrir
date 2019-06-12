@@ -13,7 +13,7 @@ The goal is to provide a secure and pleasant experience for building and deployi
 
 ## Getting Started
 
-Deploy Fenrir to AWS using `./scipts/cf_bootstrap <s3_bucket>`. This creates a CloudFormation stack with the Fenrir Step Function, Lambdas, Buckets and Roles fenrir needs to run.
+Deploy Fenrir to AWS using `./scripts/cf_bootstrap <s3_bucket>`. This creates a CloudFormation stack with the Fenrir Step Function, Lambdas, Buckets and Roles fenrir needs to run.
 
 You can then `cd examples/hello` and `fenrir package && fenrir deploy` which will deploy the `hello` example application.
 
@@ -96,9 +96,15 @@ The specific resources that it supports, and their limitations are:
 ### AWS::Serverless::Function
 
 1. `FunctionName` is generated and cannot be defined.
-1. `Role` must have the tags `ProjectName`, `ConfigName` same as the template, and `ServiceName` equal to the name of the Lambda resource.
 1. `VPCConfig.SecurityGroupIds` Each SG must have the `ProjectName`, `ConfigName` same as the template, and `ServiceName` equal to the name of the Lambda resource.
 1. `VPCConfig.SubnetIds` must have the `DeployWithFenrir` tag equal to `true`.
+1. `Role` must have the tags `ProjectName`, `ConfigName` same as the template, and `ServiceName` equal to the name of the Lambda resource.
+1. `PermissionsBoundary` must be defined, is defaulted to `fenrir-permissions-boundary`, must have *correct tags* (**TODO** for now it is hard coded as default)
+1. `Policies` only supports a list of SAM Policy templates of type (w/ limitations):
+  1. `DynamoDBCrudPolicy` where `TableName` must be a local `!Ref`
+  1. `LambdaInvokePolicy` where `FunctionName` must be a local `!Ref`
+  1. `KMSDecryptPolicy` where ref'd `KeyId` (can be alias) must have *correct tags*
+  1. `VPCAccessPolicy` 
 1. `Events` supported `Type`s and their limitations are:
 	1. `Api`: It must have `RestApiId` that is a reference to a local API resource
 	1. `S3`: `Bucket` must have *correct tags*<sup>*</sup>
@@ -126,9 +132,8 @@ The limitations are:
 
 ### AWS::Serverless::SimpleTable
 
-The limitations are:
-
 1. `TableName` is generated and cannot be defined
+2. `DeletionPolicy` is defaulted to `Retain`
 
 
 ## Fenrir Deployer

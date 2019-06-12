@@ -20,7 +20,11 @@ Resources:
       Handler: hello.lambda
       Runtime: go1.x
       Timeout: 5
-      Role: default@lambda
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref helloTable
+      - KMSDecryptPolicy:
+          KeyId: "alias/test_key"
       Events:
         hi:
           Type: Api
@@ -32,7 +36,6 @@ Resources:
           Type: SNS
           Properties:
             Topic: test-sns
-
   helloTable:
     Type: AWS::Serverless::SimpleTable
     Properties:

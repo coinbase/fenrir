@@ -22,6 +22,7 @@ func ValidateTemplateResources(
 	ddbc aws.DDBAPI,
 	sqsc aws.SQSAPI,
 	snsc aws.SNSAPI,
+	kmsc aws.KMSAPI,
 ) error {
 
 	for name, a := range template.Resources {
@@ -35,7 +36,7 @@ func ValidateTemplateResources(
 			if err := ValidateAWSServerlessFunction(
 				projectName, configName, region, accountId, name,
 				template, res, s3shas,
-				iamc, ec2c, s3c, kinc, ddbc, sqsc, snsc); err != nil {
+				iamc, ec2c, s3c, kinc, ddbc, sqsc, snsc, kmsc); err != nil {
 				return err
 			}
 		case "AWS::Serverless::Api":
@@ -103,6 +104,22 @@ func ValidateResource(prefix, projectName, configName, serviceName string, res i
 	}
 
 	return nil
+}
+
+func hasCorrectTags(projectName, configName string, tags map[string]string) error {
+	if tags["ProjectName"] == projectName && tags["ConfigName"] == configName {
+		return nil
+	}
+
+	if tags[fmt.Sprintf("FenrirAllowed:%v:%v", projectName, configName)] == "true" {
+		return nil
+	}
+
+	if tags["FenrirAllAllowed"] == "true" {
+		return nil
+	}
+
+	return fmt.Errorf("ProjectName (%v != %v) OR ConfigName (%v != %v) tags incorrect", tags["ProjectName"], projectName, tags["ConfigName"], configName)
 }
 
 func strA(strl []string) []*string {

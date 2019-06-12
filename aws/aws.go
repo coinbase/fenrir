@@ -11,6 +11,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/iam/iamiface"
 	"github.com/aws/aws-sdk-go/service/kinesis"
 	"github.com/aws/aws-sdk-go/service/kinesis/kinesisiface"
+	"github.com/aws/aws-sdk-go/service/kms"
+	"github.com/aws/aws-sdk-go/service/kms/kmsiface"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/aws/aws-sdk-go/service/sfn"
@@ -105,6 +107,9 @@ type DDBAPI dynamodbiface.DynamoDBAPI
 // SQSAPI SQS api
 type SQSAPI sqsiface.SQSAPI
 
+// KMSAPI KMS api
+type KMSAPI kmsiface.KMSAPI
+
 // Clients for AWS
 type Clients interface {
 	S3(region *string, accountID *string, role *string) S3API
@@ -116,6 +121,7 @@ type Clients interface {
 	KIN(region *string, accountID *string, role *string) KINAPI
 	DDB(region *string, accountID *string, role *string) DDBAPI
 	SQS(region *string, accountID *string, role *string) SQSAPI
+	KMS(region *string, accountID *string, role *string) KMSAPI
 }
 
 // ClientsStr implementation
@@ -166,4 +172,9 @@ func (awsc *ClientsStr) DDB(region *string, accountID *string, role *string) DDB
 // SQS returns client
 func (awsc *ClientsStr) SQS(region *string, accountID *string, role *string) SQSAPI {
 	return sqs.New(awsc.Session(), awsc.Config(region, accountID, role))
+}
+
+// KMS returns client
+func (awsc *ClientsStr) KMS(region *string, accountID *string, role *string) KMSAPI {
+	return kms.New(awsc.Session(), awsc.Config(region, accountID, role))
 }
