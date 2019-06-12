@@ -105,6 +105,7 @@ The specific resources that it supports, and their limitations are:
 	1. `Kinesis`: `Stream` must have *correct tags*<sup>*</sup>
 	1. `DynamoDB`: `Stream` must have *correct tags*<sup>*</sup>
 	1. `SQS`: `Queue` must have *correct tags*<sup>*</sup>
+ 	1. `SNS`: `Topic` can be topic name or ARN and must have *correct tags*<sup>*</sup>
 	1. `Schedule`
 	1. `CloudWatchEvent`
 

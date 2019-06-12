@@ -159,7 +159,10 @@ func (release *Release) ValidateTemplate(ec2c aws.EC2API, iamc aws.IAMAPI, s3c a
 		return fmt.Errorf("Unsupported Metadata")
 	}
 
-	if err := template.ValidateTemplateResources(*release.ProjectName, *release.ConfigName, release.Template, release.S3URISHA256s,
+	if err := template.ValidateTemplateResources(
+		*release.ProjectName, *release.ConfigName,
+		*release.AwsRegion, *release.AwsAccountID,
+		release.Template, release.S3URISHA256s,
 		iamc, ec2c, s3c, kinc, ddbc, sqsc, snsc); err != nil {
 		return err
 	}
