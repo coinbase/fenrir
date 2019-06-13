@@ -126,11 +126,11 @@ Resources:
             Statement:
               - Effect: "Allow"
                 Action:
-                  - "iam:*"
+                  - "iam:GetRole"
+                  - "iam:PassRole"
                   - "apigateway:*"
                   - "s3:*"
                   - "sns:*"
-                  - "dynamodb:*"
                   - "lambda:*"
                   - "cloudformation:*"
                   - "ec2:*"
@@ -143,6 +143,31 @@ Resources:
                   - "kms:DescribeKey"
                   - "kms:ListResourceTags"
                 Resource: "*"
+              - Effect: "Allow"
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/fenrir-*"
+                Action:
+                  - "dynamodb:CreateBackup"
+                  - "dynamodb:CreateTable"
+                  - "dynamodb:DeleteTable"
+                  - "dynamodb:Describe*"
+                  - "dynamodb:List*"
+                  - "dynamodb:TagResource"
+                  - "dynamodb:UntagResource"
+                  - "dynamodb:UpdateContinuousBackups"
+                  - "dynamodb:UpdateTable"
+                  - "dynamodb:UpdateTimeToLive"
+              - Effect: "Allow"
+                Resource: !Sub "arn:aws:iam::${AWS::AccountId}:role/sam-*"
+                Action:
+                  - "iam:CreateRole"
+                  - "iam:PutRolePermissionsBoundary"
+                  - "iam:DeleteRolePolicy"
+                  - "iam:PutRolePolicy"
+                  - "iam:DetachRolePolicy"
+                  - "iam:AttachRolePolicy"
+                Condition:
+                  StringEquals:
+                    "iam:PermissionsBoundary": !Sub "arn:aws:iam::${AWS::AccountId}:policy/fenrir-permissions-boundary"
 
   ###
   # Lambda Function

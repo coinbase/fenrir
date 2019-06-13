@@ -16,6 +16,7 @@ type MockClients struct {
 	KINClient *KINClient
 	DDBClient *DDBClient
 	SQSClient *SQSClient
+	KMSClient *KMSClient
 }
 
 // MockAWS mock clients
@@ -30,6 +31,7 @@ func MockAWS() *MockClients {
 		KINClient: &KINClient{},
 		DDBClient: &DDBClient{},
 		SQSClient: &SQSClient{},
+		KMSClient: &KMSClient{},
 	}
 }
 
@@ -72,4 +74,8 @@ func (a *MockClients) DDB(*string, *string, *string) aws.DDBAPI {
 
 func (a *MockClients) SQS(*string, *string, *string) aws.SQSAPI {
 	return a.SQSClient
+}
+
+func (a *MockClients) KMS(*string, *string, *string) aws.KMSAPI {
+	return a.KMSClient
 }

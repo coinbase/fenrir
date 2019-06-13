@@ -13,6 +13,10 @@ func ValidateAWSServerlessSimpleTable(
 	res *resources.AWSServerlessSimpleTable,
 ) error {
 
+	if res.DeletionPolicy() == "" {
+		res.SetDeletionPolicy("Retain")
+	}
+
 	if res.TableName != "" {
 		return resourceError(res, resourceName, "Names are overwritten")
 	}

@@ -7,6 +7,7 @@ import (
 	"github.com/awslabs/goformation/cloudformation/resources"
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/fenrir/aws/iam"
+	"github.com/coinbase/fenrir/aws/kms"
 	"github.com/coinbase/fenrir/aws/sg"
 	"github.com/coinbase/fenrir/aws/subnet"
 	"github.com/coinbase/step/utils/to"
@@ -24,6 +25,7 @@ func ValidateAWSServerlessFunction(
 	ddbc aws.DDBAPI,
 	sqsc aws.SQSAPI,
 	snsc aws.SNSAPI,
+	kmsc aws.KMSAPI,
 ) error {
 
 	if fun.FunctionName != "" {
@@ -41,17 +43,8 @@ func ValidateAWSServerlessFunction(
 	fun.Tags["ConfigName"] = configName
 	fun.Tags["ServiceName"] = resourceName
 
-	// Role Must be Name and NOT intrinsic
-	// We make sure it exists and has the correct tags
-	role, err := iam.GetRole(iamc, &fun.Role)
-	if err != nil {
-		return resourceError(fun, resourceName, fmt.Sprintf("%v %v", fun.Role, err.Error()))
-	}
-
-	fun.Role = to.Strs(role.Arn)
-
-	if err := ValidateResource("Role", projectName, configName, resourceName, role); err != nil {
-		return resourceError(fun, resourceName, err.Error())
+	if err := ValidateFunctionIAM(projectName, configName, accountId, resourceName, fun, iamc, kmsc); err != nil {
+		return err
 	}
 
 	if fun.VpcConfig != nil {
@@ -60,6 +53,126 @@ func ValidateAWSServerlessFunction(
 		}
 	}
 
+	if err := ValidateFunctionEvents(template, projectName, configName, region, accountId, resourceName, fun, s3c, kinc, ddbc, sqsc, snsc); err != nil {
+		return err
+	}
+
+	// CodeURI checking
+	if fun.CodeUri != nil {
+		if fun.CodeUri.S3Location != nil {
+			return resourceError(fun, resourceName, "CodeUri.S3Location not supported")
+		}
+
+		if fun.CodeUri.String == nil {
+			return resourceError(fun, resourceName, "CodeUri nil")
+		}
+
+		s3URI := *fun.CodeUri.String
+		if _, ok := s3shas[s3URI]; !ok {
+			return fmt.Errorf("CodeUri %v not included in the SHA256s map", s3URI)
+		}
+	}
+
+	return nil
+}
+
+func ValidateFunctionIAM(
+	projectName, configName, accountId, resourceName string,
+	fun *resources.AWSServerlessFunction,
+	iamc aws.IAMAPI,
+	kmsc aws.KMSAPI,
+) error {
+	// IAM VALIDATIONS
+	// Either Role XOR Policies
+
+	if fun.Role != "" && fun.Policies == nil {
+
+		// Role Must be Name and NOT intrinsic
+		// We make sure it exists and has the correct tags
+		role, err := iam.GetRole(iamc, &fun.Role)
+		if err != nil {
+			return resourceError(fun, resourceName, fmt.Sprintf("%v %v", fun.Role, err.Error()))
+		}
+
+		fun.Role = to.Strs(role.Arn)
+
+		if err := ValidateResource("Role", projectName, configName, resourceName, role); err != nil {
+			return resourceError(fun, resourceName, err.Error())
+		}
+
+	} else if fun.Role == "" && fun.Policies != nil {
+		fun.PermissionsBoundary = fmt.Sprintf("arn:aws:iam::%s:policy/fenrir-permissions-boundary", accountId)
+		policies := fun.Policies
+		if policies.String != nil ||
+			policies.IAMPolicyDocument != nil {
+			return resourceError(fun, resourceName, "Policies: only support SAMPolicyTemplateArray")
+		}
+
+		// Arrays are a bit annoying because they contain the zero values
+		if policies.StringArray != nil {
+			for _, s := range *policies.StringArray {
+				if s != "" {
+					return resourceError(fun, resourceName, fmt.Sprintf("Policies: only support SAMPolicyTemplateArray not StringArray with %q", s))
+				}
+			}
+		}
+
+		if policies.IAMPolicyDocumentArray != nil {
+			for _, i := range *policies.IAMPolicyDocumentArray {
+				if i.Statement != nil {
+					return resourceError(fun, resourceName, "Policies: only support SAMPolicyTemplateArray not IAMPolicyDocumentArray")
+				}
+			}
+		}
+
+		if policies.SAMPolicyTemplateArray == nil || len(*policies.SAMPolicyTemplateArray) == 0 {
+			return resourceError(fun, resourceName, "Policies: SAMPolicyTemplateArray undefined")
+		}
+
+		for _, p := range *policies.SAMPolicyTemplateArray {
+			if p.DynamoDBCrudPolicy != nil {
+				ref, err := decodeRef(p.DynamoDBCrudPolicy.TableName)
+				if err != nil || ref == "" {
+					return resourceError(fun, resourceName, "Policies.DynamoDBCrudPolicy.TableName must be !Ref")
+				}
+			} else if p.LambdaInvokePolicy != nil {
+				ref, err := decodeRef(p.LambdaInvokePolicy.FunctionName)
+				if err != nil || ref == "" {
+					return resourceError(fun, resourceName, "Policies.LambdaInvokePolicy.FunctionName must be !Ref")
+				}
+			} else if p.KMSDecryptPolicy != nil {
+				key, err := kms.FindKey(kmsc, p.KMSDecryptPolicy.KeyId)
+				if err != nil {
+					return resourceError(fun, resourceName, fmt.Sprintf("KMSDecryptPolicy %v", err.Error()))
+				}
+				err = hasCorrectTags(projectName, configName, key.Tags)
+				if err != nil {
+					return resourceError(fun, resourceName, fmt.Sprintf("KMSDecryptPolicy %v", err.Error()))
+				}
+			} else if p.VPCAccessPolicy != nil {
+				// All good
+			} else {
+				return resourceError(fun, resourceName, fmt.Sprintf("Policies: Unsupported SAMPolicyTemplate %s", to.CompactJSONStr(p)))
+			}
+		}
+
+	} else {
+		return resourceError(fun, resourceName, "Must define Role XOR Policies")
+	}
+
+	return nil
+}
+
+func ValidateFunctionEvents(
+	template *cloudformation.Template,
+	projectName, configName, region, accountId, resourceName string,
+	fun *resources.AWSServerlessFunction,
+	s3c aws.S3API,
+	kinc aws.KINAPI,
+	ddbc aws.DDBAPI,
+	sqsc aws.SQSAPI,
+	snsc aws.SNSAPI,
+) error {
 	// Support and Validate These Events
 	// S3 SNS Kinesis DynamoDB SQS Api Schedule CloudWatchEvent CloudWatchLogs IoTRule AlexaSkill
 	for eventName, event := range fun.Events {
@@ -98,22 +211,6 @@ func ValidateAWSServerlessFunction(
 			}
 		default:
 			return resourceError(fun, resourceName, fmt.Sprintf("Event %q Unsupported Event type %q", eventName, event.Type))
-		}
-	}
-
-	// CodeURI checking
-	if fun.CodeUri != nil {
-		if fun.CodeUri.S3Location != nil {
-			return resourceError(fun, resourceName, "CodeUri.S3Location not supported")
-		}
-
-		if fun.CodeUri.String == nil {
-			return resourceError(fun, resourceName, "CodeUri nil")
-		}
-
-		s3URI := *fun.CodeUri.String
-		if _, ok := s3shas[s3URI]; !ok {
-			return fmt.Errorf("CodeUri %v not included in the SHA256s map", s3URI)
 		}
 	}
 

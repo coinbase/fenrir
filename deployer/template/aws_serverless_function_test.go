@@ -29,6 +29,7 @@ func TestValidateAWSServerlessFunctionWorks(t *testing.T) {
 		awsc.DDB(nil, nil, nil),
 		awsc.SQS(nil, nil, nil),
 		awsc.SNS(nil, nil, nil),
+		awsc.KMS(nil, nil, nil),
 	)
 
 	assert.NoError(t, err)

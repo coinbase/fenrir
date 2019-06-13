@@ -13,7 +13,7 @@ Resources:
     Properties:
       StageName: dev
       EndpointConfiguration: REGIONAL
-  hello:
+  basicHello:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: .
@@ -21,6 +21,21 @@ Resources:
       Runtime: go1.x
       Timeout: 5
       Role: default@lambda
+  hello:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: hello.lambda
+      Runtime: go1.x
+      Timeout: 5
+      Policies:
+      - LambdaInvokePolicy:
+          FunctionName: !Ref basicHello
+      - DynamoDBCrudPolicy:
+          TableName: !Ref helloTable
+      - KMSDecryptPolicy:
+          KeyId: "alias/test_key"
+      - VPCAccessPolicy: {}
       Events:
         hi:
           Type: Api
@@ -32,9 +47,9 @@ Resources:
           Type: SNS
           Properties:
             Topic: test-sns
-
   helloTable:
     Type: AWS::Serverless::SimpleTable
+    DeletionPolicy: Delete
     Properties:
       PrimaryKey:
         Name: id

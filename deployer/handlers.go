@@ -43,6 +43,7 @@ func Validate(awsc aws.Clients) DeployHandler {
 			awsc.DDB(release.AwsRegion, release.AwsAccountID, assumedRole),
 			awsc.SQS(release.AwsRegion, release.AwsAccountID, assumedRole),
 			awsc.SNS(release.AwsRegion, release.AwsAccountID, assumedRole),
+			awsc.KMS(release.AwsRegion, release.AwsAccountID, assumedRole),
 		); err != nil {
 			return nil, &errors.BadReleaseError{err.Error()}
 		}
