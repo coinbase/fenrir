@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/fenrir/aws/cf"
+	"github.com/coinbase/fenrir/deployer/static"
 	"github.com/coinbase/fenrir/deployer/template"
 
 	"github.com/coinbase/step/aws/s3"
@@ -113,6 +114,37 @@ func (release *Release) ValidateSHAs(s3c aws.S3API) error {
 	return nil
 }
 
+func JSONSchema() (string, error) {
+	newSchema := map[string]interface{}{}
+	s3FileSchema := map[string]interface{}{}
+
+	if err := json.Unmarshal([]byte(schema.SamSchema), &newSchema); err != nil {
+		return "", err
+	}
+
+	if err := json.Unmarshal([]byte(static.S3FileSchema), &s3FileSchema); err != nil {
+		return "", err
+	}
+
+	defs := newSchema["definitions"].(map[string]interface{})
+	// Add our custom Schemas
+	defs["Custom::S3File"] = s3FileSchema
+
+	// TODO: cleanup
+	props := newSchema["properties"].(map[string]interface{})
+	res := props["Resources"].(map[string]interface{})
+	pp := res["patternProperties"].(map[string]interface{})
+	reg := pp["^[a-zA-Z0-9]+$"].(map[string]interface{})
+	ao := reg["anyOf"].([]interface{})
+	reg["anyOf"] = append(ao, map[string]interface{}{"$ref": "#/definitions/Custom::S3File"})
+
+	newSchemaStr, err := json.Marshal(newSchema)
+	if err != nil {
+		return "", err
+	}
+	return string(newSchemaStr), nil
+}
+
 func (release *Release) ValidateSchema() error {
 	// Don't use SAM.JSON() because it replaces base64 strings with objects
 	templateBody, err := json.Marshal(release.Template)
@@ -120,7 +152,12 @@ func (release *Release) ValidateSchema() error {
 		return err
 	}
 
-	schemaLoader := gojsonschema.NewStringLoader(schema.SamSchema)
+	schema, err := JSONSchema()
+	if err != nil {
+		return err
+	}
+
+	schemaLoader := gojsonschema.NewStringLoader(schema)
 	documentLoader := gojsonschema.NewStringLoader(string(templateBody))
 
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
@@ -142,6 +179,7 @@ func (release *Release) ValidateSchema() error {
 
 // Resource Validations
 func (release *Release) ValidateTemplate(
+	lambdaArn string,
 	ec2c aws.EC2API,
 	iamc aws.IAMAPI,
 	s3c aws.S3API,
@@ -170,7 +208,7 @@ func (release *Release) ValidateTemplate(
 
 	if err := template.ValidateTemplateResources(
 		*release.ProjectName, *release.ConfigName,
-		*release.AwsRegion, *release.AwsAccountID,
+		*release.AwsRegion, *release.AwsAccountID, lambdaArn,
 		release.Template, release.S3URISHA256s,
 		iamc, ec2c, s3c, kinc, ddbc, sqsc, snsc, kmsc); err != nil {
 		return err

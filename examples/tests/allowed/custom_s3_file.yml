@@ -1,0 +1,11 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Hello SAM
+
+Resources:
+  s3File:
+    Type: Custom::S3File
+    Properties:
+      Bucket: bucket
+      Key: example.txt
+      Uri: s3://bucket/path.zip

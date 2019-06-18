@@ -12,7 +12,7 @@ import (
 )
 
 func ValidateTemplateResources(
-	projectName, configName, region, accountId string,
+	projectName, configName, region, accountId, lambdaArn string,
 	template *cloudformation.Template,
 	s3shas map[string]string,
 	iamc aws.IAMAPI,
@@ -68,7 +68,15 @@ func ValidateTemplateResources(
 			if err := ValidateAWSServerlessSimpleTable(projectName, configName, name, template, res); err != nil {
 				return err
 			}
+		case "Custom::S3File":
+			res, err := template.GetCustomResourceWithName(name)
+			if err != nil {
+				return err
+			}
 
+			if err := ValidateCustomS3File(projectName, configName, name, lambdaArn, template, res, s3shas, s3c); err != nil {
+				return err
+			}
 		default:
 			return fmt.Errorf("Unsupported type %q for %q", a.AWSCloudFormationType(), name)
 		}

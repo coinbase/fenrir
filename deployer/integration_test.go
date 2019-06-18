@@ -29,6 +29,7 @@ var goodReleases = []string{
 	"../examples/tests/allowed/cloudwatch.yml",
 	"../examples/tests/allowed/cloudevent.yml",
 	"../examples/tests/allowed/multiple_functions.yml",
+	"../examples/tests/allowed/custom_s3_file.yml",
 }
 
 func Test_Successful_Execution(t *testing.T) {
@@ -37,6 +38,9 @@ func Test_Successful_Execution(t *testing.T) {
 		t.Run(releaseFile, func(t *testing.T) {
 			release, err := MockRelease(releaseFile)
 			assert.NoError(t, err)
+			if err != nil {
+				return
+			}
 			assertSuccessfulExecution(t, release)
 		})
 
