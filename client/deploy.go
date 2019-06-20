@@ -31,6 +31,29 @@ func Deploy(step_fn *string, releaseFile *string) error {
 	return deploy(&aws.ClientsStr{}, release, deployerARN, releaseFile)
 }
 
+func uploadFile(awsc aws.Clients, file string, releaseFile string, release *deployer.Release) (string, string, error) {
+	filePath := extractedFilePath(releaseFile, file)
+	s3URI := s3FileURI(release, file)
+
+	fileSHA, err := to.SHA256File(filePath)
+	if err != nil {
+		return "", "", err
+	}
+
+	err = s3.PutFile(
+		awsc.S3(nil, nil, nil),
+		to.Strp(filePath),
+		release.Bucket,
+		to.Strp(s3FilePath(release, file)),
+	)
+
+	if err != nil {
+		return "", "", err
+	}
+
+	return s3URI, fileSHA, nil
+}
+
 func deploy(awsc aws.Clients, release *deployer.Release, deployerARN *string, releaseFile *string) error {
 
 	release.S3URISHA256s = map[string]string{}
@@ -38,27 +61,34 @@ func deploy(awsc aws.Clients, release *deployer.Release, deployerARN *string, re
 	// replace CodeURI with s3 path to uploaded zip
 	// Also write fileSHA
 	for name, res := range release.Template.GetAllAWSServerlessFunctionResources() {
-		zipPath := zipFilePath(releaseFile, name)
-		s3URI := s3FileURI(release, name)
+		file := fmt.Sprintf("%v.zip", name)
 
-		fileSHA, err := to.SHA256File(zipPath)
+		s3URI, fileSHA, err := uploadFile(awsc, file, *releaseFile, release)
+
 		if err != nil {
 			return err
 		}
 
 		res.CodeUri.String = &s3URI
 		release.S3URISHA256s[s3URI] = fileSHA
+	}
 
-		err = s3.PutFile(
-			awsc.S3(nil, nil, nil),
-			to.Strp(zipPath),
-			release.Bucket,
-			to.Strp(s3FilePath(release, name)),
-		)
+	for _, resource := range release.Template.GetAllCustomResources() {
+		resType := resource.AWSCloudFormationType()
+		// Limit types
+		if resType != "Custom::S3File" && resType != "Custom::S3ZipFile" {
+			continue
+		}
+
+		file := resource.Properties["Uri"].(string)
+		s3URI, fileSHA, err := uploadFile(awsc, file, *releaseFile, release)
 
 		if err != nil {
 			return err
 		}
+
+		resource.Properties["Uri"] = &s3URI
+		release.S3URISHA256s[s3URI] = fileSHA
 	}
 
 	// Uploading the Release to S3 to match SHAs

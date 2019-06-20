@@ -41,6 +41,30 @@ func Package(releaseFile *string) error {
 		}
 	}
 
+	for _, resource := range release.Template.GetAllCustomResources() {
+		resType := resource.AWSCloudFormationType()
+		// Limit types
+		if resType != "Custom::S3File" && resType != "Custom::S3ZipFile" {
+			continue
+		}
+
+		if resource.Properties["Uri"] == nil {
+			continue
+		}
+
+		uri := resource.Properties["Uri"].(string)
+		err = execute(
+			"docker",
+			"cp",
+			fmt.Sprintf("%v:%v", containerName, uri),
+			fmt.Sprintf("%v.%v", *releaseFile, uri),
+		)
+
+		if err != nil {
+			return err
+		}
+	}
+
 	fmt.Println("Complete")
 
 	return nil

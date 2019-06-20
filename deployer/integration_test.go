@@ -30,6 +30,7 @@ var goodReleases = []string{
 	"../examples/tests/allowed/cloudevent.yml",
 	"../examples/tests/allowed/multiple_functions.yml",
 	"../examples/tests/allowed/custom_s3_file.yml",
+	"../examples/tests/allowed/custom_s3_zip_file.yml",
 }
 
 func Test_Successful_Execution(t *testing.T) {

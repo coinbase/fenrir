@@ -77,6 +77,15 @@ func ValidateTemplateResources(
 			if err := ValidateCustomS3File(projectName, configName, name, lambdaArn, template, res, s3shas, s3c); err != nil {
 				return err
 			}
+		case "Custom::S3ZipFile":
+			res, err := template.GetCustomResourceWithName(name)
+			if err != nil {
+				return err
+			}
+
+			if err := ValidateCustomS3File(projectName, configName, name, lambdaArn, template, res, s3shas, s3c); err != nil {
+				return err
+			}
 		default:
 			return fmt.Errorf("Unsupported type %q for %q", a.AWSCloudFormationType(), name)
 		}
