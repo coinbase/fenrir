@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/awslabs/goformation/cloudformation"
-	"github.com/coinbase/odin/aws"
+	"github.com/coinbase/step/aws"
 	"github.com/coinbase/step/aws/s3"
 	"github.com/coinbase/step/utils/to"
 )
