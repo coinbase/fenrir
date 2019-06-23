@@ -10,6 +10,8 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref Table
+      - SQSPollerPolicy:
+          QueueName: !Ref Queue
       - LambdaInvokePolicy:
           FunctionName: !Ref hello
       - VPCAccessPolicy: {}
@@ -21,3 +23,5 @@ Resources:
       PrimaryKey:
         Name: id
         Type: String
+  Queue:
+    Type: AWS::SQS::Queue

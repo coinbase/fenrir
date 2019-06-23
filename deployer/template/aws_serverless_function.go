@@ -135,6 +135,11 @@ func ValidateFunctionIAM(
 				if err != nil || ref == "" {
 					return resourceError(fun, resourceName, "Policies.DynamoDBCrudPolicy.TableName must be !Ref")
 				}
+			} else if p.SQSPollerPolicy != nil {
+				ref, err := decodeRef(p.SQSPollerPolicy.QueueName)
+				if err != nil || ref == "" {
+					return resourceError(fun, resourceName, "Policies.SQSPollerPolicy.QueueName must be !Ref")
+				}
 			} else if p.LambdaInvokePolicy != nil {
 				ref, err := decodeRef(p.LambdaInvokePolicy.FunctionName)
 				if err != nil || ref == "" {
@@ -186,7 +191,7 @@ func ValidateFunctionEvents(
 				return resourceError(fun, resourceName, fmt.Sprintf("S3 Event %q %v", eventName, err.Error()))
 			}
 		case "Kinesis":
-			if err := ValidateKinesisEvent(projectName, configName, event.Properties.KinesisEvent, kinc); err != nil {
+			if err := ValidateKinesisEvent(projectName, configName, region, accountId, event.Properties.KinesisEvent, kinc); err != nil {
 				return resourceError(fun, resourceName, fmt.Sprintf("Kinesis Event %q %v", eventName, err.Error()))
 			}
 		case "DynamoDB":
@@ -194,7 +199,7 @@ func ValidateFunctionEvents(
 				return resourceError(fun, resourceName, fmt.Sprintf("DynamoDB Event %q %v", eventName, err.Error()))
 			}
 		case "SQS":
-			if err := ValidateSQSEvent(projectName, configName, event.Properties.SQSEvent, sqsc); err != nil {
+			if err := ValidateSQSEvent(projectName, configName, region, accountId, event.Properties.SQSEvent, sqsc); err != nil {
 				return resourceError(fun, resourceName, fmt.Sprintf("SQS Event %q %v", eventName, err.Error()))
 			}
 		case "SNS":
