@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Hello SAM
+
+Resources:
+  hello:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://bucket/path.zip
+      Role: role_correct
+      Handler: hello.lambda
+      Runtime: go1.x
+      Timeout: 5
+      Events:
+        queuelisten:
+          Type: SQS
+          Properties:
+            Queue: !Ref queue
+
+  queue:
+    Type: AWS::SQS::Queue

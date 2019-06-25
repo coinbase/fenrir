@@ -33,6 +33,8 @@ Resources:
           FunctionName: !Ref basicHello
       - DynamoDBCrudPolicy:
           TableName: !Ref helloTable
+      - SQSPollerPolicy:
+          QueueName: !Ref helloQueue
       - KMSDecryptPolicy:
           KeyId: "alias/test_key"
       - VPCAccessPolicy: {}
@@ -54,6 +56,9 @@ Resources:
       PrimaryKey:
         Name: id
         Type: String
+
+  helloQueue:
+    Type: AWS::SQS::Queue
 
 Outputs:
   ApiUrl:

@@ -49,7 +49,11 @@ func ValidateS3Event(projectName, configName string, event *resources.AWSServerl
 	return hasCorrectTags(projectName, configName, tags)
 }
 
-func ValidateKinesisEvent(projectName, configName string, event *resources.AWSServerlessFunction_KinesisEvent, kinc aws.KINAPI) error {
+func ValidateKinesisEvent(projectName, configName, region, accountId string, event *resources.AWSServerlessFunction_KinesisEvent, kinc aws.KINAPI) error {
+	if !strings.HasPrefix(event.Stream, "arn:") {
+		event.Stream = fmt.Sprintf("arn:aws:kinesis:%s:%s:%s", region, accountId, event.Stream)
+	}
+
 	//event.Stream is an arn e.g. arn:aws:kinesis:us-east-1:000000000000:stream/<stream-name>
 	_, _, resource := to.ArnRegionAccountResource(event.Stream)
 	// resource is the type/name e.g. "stream/<stream-name>""
@@ -101,7 +105,11 @@ func ValidateDynamoDBEvent(projectName, configName string, event *resources.AWSS
 	return hasCorrectTags(projectName, configName, tags)
 }
 
-func ValidateSQSEvent(projectName, configName string, event *resources.AWSServerlessFunction_SQSEvent, sqsc aws.SQSAPI) error {
+func ValidateSQSEvent(projectName, configName, region, accountId string, event *resources.AWSServerlessFunction_SQSEvent, sqsc aws.SQSAPI) error {
+	if !strings.HasPrefix(event.Queue, "arn:") {
+		event.Queue = fmt.Sprintf("arn:aws:sqs:%s:%s:%s", region, accountId, event.Queue)
+	}
+
 	// event.Queue is ARN e.g. arn:aws:sqs:us-east-1:000000000000:test-queue
 	region, account, resource := to.ArnRegionAccountResource(event.Queue)
 	if region == "" || account == "" || resource == "" {
@@ -109,7 +117,7 @@ func ValidateSQSEvent(projectName, configName string, event *resources.AWSServer
 	}
 
 	// need URL e.g. https://sqs.us-east-1.amazonaws.com/000000000000/test-queue
-	queueURL := fmt.Sprintf("https://sqs.%v.amazonaws.com/%v/%v", region, account, resource)
+	queueURL := fmt.Sprintf("https://sqs.%v.amazonaws.com/%v/%v", region, accountId, resource)
 
 	out, err := sqsc.ListQueueTags(&sqs.ListQueueTagsInput{
 		QueueUrl: &queueURL,

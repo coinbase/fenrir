@@ -102,9 +102,10 @@ The specific resources that it supports, and their limitations are:
 1. `PermissionsBoundary` must be defined, is defaulted to `fenrir-permissions-boundary`, must have *correct tags* (**TODO** for now it is hard coded as default)
 1. `Policies` only supports a list of SAM Policy templates of type (w/ limitations):
   1. `DynamoDBCrudPolicy` where `TableName` must be a local `!Ref`
+  1. `SQSPollerPolicy` where `QueueName` must be a local `!Ref`
   1. `LambdaInvokePolicy` where `FunctionName` must be a local `!Ref`
   1. `KMSDecryptPolicy` where ref'd `KeyId` (can be alias) must have *correct tags*
-  1. `VPCAccessPolicy` 
+  1. `VPCAccessPolicy`
 1. `Events` supported `Type`s and their limitations are:
 	1. `Api`: It must have `RestApiId` that is a reference to a local API resource
 	1. `S3`: `Bucket` must have *correct tags*<sup>*</sup>
@@ -135,6 +136,10 @@ The limitations are:
 1. `TableName` is generated and cannot be defined
 2. `DeletionPolicy` is defaulted to `Retain`
 
+### AWS::SQS::Queue
+
+1. `QueueName` is generated and cannot be defined
+2. `DeletionPolicy` is defaulted to `Retain`
 
 ## Fenrir Deployer
 
