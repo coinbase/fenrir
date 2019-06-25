@@ -12,7 +12,7 @@ import (
 )
 
 func ValidateTemplateResources(
-	projectName, configName, region, accountId, lambdaArn string,
+	projectName, configName, region, accountId string,
 	template *cloudformation.Template,
 	s3shas map[string]string,
 	iamc aws.IAMAPI,
@@ -74,7 +74,7 @@ func ValidateTemplateResources(
 				return err
 			}
 
-			if err := ValidateCustomS3File(projectName, configName, name, lambdaArn, template, res, s3shas, s3c); err != nil {
+			if err := ValidateCustomS3File(projectName, configName, name, accountId, template, res, s3shas, s3c); err != nil {
 				return err
 			}
 		case "Custom::S3ZipFile":
@@ -83,7 +83,7 @@ func ValidateTemplateResources(
 				return err
 			}
 
-			if err := ValidateCustomS3File(projectName, configName, name, lambdaArn, template, res, s3shas, s3c); err != nil {
+			if err := ValidateCustomS3File(projectName, configName, name, accountId, template, res, s3shas, s3c); err != nil {
 				return err
 			}
 		default:

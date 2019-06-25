@@ -35,13 +35,7 @@ func Validate(awsc aws.Clients) DeployHandler {
 			return nil, &errors.BadReleaseError{err.Error()}
 		}
 
-		lambdaArn, err := to.LambdaArnFromContext(ctx)
-		if err != nil {
-			return nil, &errors.BadReleaseError{err.Error()}
-		}
-
 		if err := release.ValidateTemplate(
-			lambdaArn,
 			awsc.EC2(release.AwsRegion, release.AwsAccountID, assumedRole),
 			awsc.IAM(release.AwsRegion, release.AwsAccountID, assumedRole),
 			awsc.S3(release.AwsRegion, release.AwsAccountID, assumedRole),

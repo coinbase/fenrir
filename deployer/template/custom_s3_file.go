@@ -10,10 +10,11 @@ import (
 	"github.com/coinbase/step/utils/to"
 )
 
-// AWS::Serverless::LayerVersion
+var SNSTopicName = to.Strp("coinbase-fenrir-custom-resources")
 
+// AWS::Serverless::LayerVersion
 func ValidateCustomS3File(
-	projectName, configName, resourceName, lambdaArn string,
+	projectName, configName, resourceName, region, accountID string,
 	template *cloudformation.Template,
 	res *cloudformation.CustomResource,
 	s3shas map[string]string,
@@ -25,7 +26,7 @@ func ValidateCustomS3File(
 		return resourceError(res, resourceName, "ServiceToken are overwritten")
 	}
 
-	res.Properties["ServiceToken"] = lambdaArn
+	res.Properties["ServiceToken"] = fmt.Sprintf("arn:aws:sns:%v:%v:%v", region, accountID, SNSTopicName)
 
 	bucket, _, uri, err := ValidateS3FilePropertyValues(res.Properties["Bucket"], res.Properties["Key"], res.Properties["Uri"])
 	if err != nil {

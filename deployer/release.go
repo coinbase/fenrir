@@ -179,7 +179,6 @@ func (release *Release) ValidateSchema() error {
 
 // Resource Validations
 func (release *Release) ValidateTemplate(
-	lambdaArn string,
 	ec2c aws.EC2API,
 	iamc aws.IAMAPI,
 	s3c aws.S3API,
@@ -208,7 +207,7 @@ func (release *Release) ValidateTemplate(
 
 	if err := template.ValidateTemplateResources(
 		*release.ProjectName, *release.ConfigName,
-		*release.AwsRegion, *release.AwsAccountID, lambdaArn,
+		*release.AwsRegion, *release.AwsAccountID,
 		release.Template, release.S3URISHA256s,
 		iamc, ec2c, s3c, kinc, ddbc, sqsc, snsc, kmsc); err != nil {
 		return err

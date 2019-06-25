@@ -24,6 +24,30 @@ var SimpleZIPFile, _ = base64.StdEncoding.DecodeString(
 	"UEsDBAoAAAAAAC+JSE5YS6enDgAAAA4AAAAEABwAcm9vdFVUCQADyrddXCi4XVx1eAsAAQT1AQAABBQAAABJIEFNIFJPT1QgRklMRVBLAwQKAAAAAADTiEhOXtqaYBAAAAAQAAAACwAcAGZvbGRlci9maWxlVVQJAAMdt11cH7ddXHV4CwABBPUBAAAEFAAAAEkgQU0gRk9MREVSIEZJTEVQSwMECgAAAAAA2ohITuHgaBoMAAAADAAAAA8AHABmb2xkZXIvdGVzdC5zdmdVVAkAAyu3XVwtt11cdXgLAAEE9QEAAAQUAAAASSBBTSBOT1QgU1ZHUEsDBBQAAAAIAOKISE4GH0AHCgAAAAsAAAAQABwAZm9sZGVyL3Rlc3QyLnN2Z1VUCQADOLddXCi4XVx1eAsAAQT1AQAABBQAAACzKS5Lt7PRB5EAUEsDBAoAAAAAAFeJSE4amjZ3FwAAABcAAAAPABwAZm9sZGVyL3Rlc3QuY3NzVVQJAAMVuF1cFbhdXHV4CwABBPUBAAAEFAAAAHAgeyBiYWNrcm91bmQ6IGJsYWNrOyB9UEsBAh4DCgAAAAAAL4lITlhLp6cOAAAADgAAAAQAGAAAAAAAAQAAAKSBAAAAAHJvb3RVVAUAA8q3XVx1eAsAAQT1AQAABBQAAABQSwECHgMKAAAAAADTiEhOXtqaYBAAAAAQAAAACwAYAAAAAAABAAAApIFMAAAAZm9sZGVyL2ZpbGVVVAUAAx23XVx1eAsAAQT1AQAABBQAAABQSwECHgMKAAAAAADaiEhO4eBoGgwAAAAMAAAADwAYAAAAAAABAAAApIGhAAAAZm9sZGVyL3Rlc3Quc3ZnVVQFAAMrt11cdXgLAAEE9QEAAAQUAAAAUEsBAh4DFAAAAAgA4ohITgYfQAcKAAAACwAAABAAGAAAAAAAAQAAAKSB9gAAAGZvbGRlci90ZXN0Mi5zdmdVVAUAAzi3XVx1eAsAAQT1AQAABBQAAABQSwECHgMKAAAAAABXiUhOGpo2dxcAAAAXAAAADwAYAAAAAAABAAAApIFKAQAAZm9sZGVyL3Rlc3QuY3NzVVQFAAMVuF1cdXgLAAEE9QEAAAQUAAAAUEsFBgAAAAAFAAUAmwEAAKoBAAAAAA==",
 )
 
+// { "Records": [
+//   { "EventVersion": "1.0",
+//     "EventSubscriptionArn": "arn:aws:sns:us-east-1:…:RequestRoute53CNAME:…",
+//     "EventSource": "aws:sns",
+//     "Sns": {
+//        "MessageId": "6ae3f7a1-2772-568c-9175-a603bc40bf03",
+//        "Message": {
+//           "RequestType":“Update",
+//           "ResponseURL":" https://cloudformation-custom-resource-response-useast1...",
+//           "ResourceType":"Custom::CNAME",
+//           "OldResourceProperties":{
+//              “Target":"my-first-loadbalancer.us-east-1.elb.amazonaws.com",
+//              “Source":"test.example.com“
+//           },
+//           "ResourceProperties":{
+//              “Target":"my-second-loadbalancer.us-east-1.elb.amazonaws.com",
+//              “Source":"test.example.com“
+//           }
+//         }
+//       }
+//     }
+//   }
+// ]}
+
 func Test_Custom_S3File(t *testing.T) {
 	awsc := mocks.MockAWS()
 	awsc.S3Client.AddGetObject("fromKey", "", nil)

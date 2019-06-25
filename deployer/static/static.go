@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/aws/aws-lambda-go/cfn"
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/fenrir/deployer/template"
 	"github.com/coinbase/step/utils/to"
@@ -15,13 +16,17 @@ import (
 
 var assumedRole = to.Strp("coinbase-fenrir-assumed")
 
-func StaticSiteResources(awsc aws.Clients) cfn.CustomResourceLambdaFunction {
+// Wrap the
+func StaticSiteResources(awsc aws.Clients) func(context.Context, events.SNSEvent) (interface{}, error) {
 	// Wrapper adds the call backs to Cloudformation
-	return cfn.LambdaWrap(staticSiteResources(awsc))
+	customResourceHandler = cfn.LambdaWrap(staticSiteResources(awsc))
+
+	return
 }
 
 func staticSiteResources(awsc aws.Clients) func(context.Context, cfn.Event) (string, map[string]interface{}, error) {
 	return func(ctx context.Context, event cfn.Event) (string, map[string]interface{}, error) {
+		// TODO: Validate in S3 this is a real release, so someone cant just upload anything to any S3 Bucket
 		region, accountID, _ := to.ArnRegionAccountResource(event.StackID)
 		lambdas3c := awsc.S3(nil, nil, nil)
 		s3c := awsc.S3(&region, &accountID, assumedRole)

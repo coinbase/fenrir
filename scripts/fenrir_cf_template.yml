@@ -176,6 +176,21 @@ Resources:
                     "iam:PermissionsBoundary": !Sub "arn:aws:iam::${AWS::AccountId}:policy/fenrir-permissions-boundary"
 
   ###
+  # SNS Custom Resource ARN
+  ###
+  CustomResourceSNS:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: coinbase-fenrir-custom-resources
+
+  CustomResourceSNSPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      PolicyDocument: "{}"
+      Topics:
+        - coinbase-fenrir-custom-resources
+
+  ###
   # Lambda Function
   ###
   FenrirLambdaFunction:
@@ -187,6 +202,12 @@ Resources:
       CodeUri: "./lambda.zip"
       Runtime: "go1.x"
       Timeout: 30
+      Events:
+        CustomResourceSNS:
+          Type: SNS
+          Properties:
+            Topic: !Ref CustomResourceSNS
+
 
   # Step Function
   FenrirStepFunction:
