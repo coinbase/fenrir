@@ -106,6 +106,12 @@ func ValidateDynamoDBEvent(projectName, configName string, event *resources.AWSS
 }
 
 func ValidateSQSEvent(projectName, configName, region, accountId string, event *resources.AWSServerlessFunction_SQSEvent, sqsc aws.SQSAPI) error {
+	// If the event is a valid GetAtt
+	ref, err := decodeGetAtt(event.Queue)
+	if err == nil && len(ref) > 0 {
+		return nil
+	}
+
 	if !strings.HasPrefix(event.Queue, "arn:") {
 		event.Queue = fmt.Sprintf("arn:aws:sqs:%s:%s:%s", region, accountId, event.Queue)
 	}
