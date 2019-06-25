@@ -21,11 +21,12 @@ func ValidateCustomS3File(
 	s3c aws.S3API,
 ) error {
 
-	// We override the ServiceToken to be the Fenrir Lambda ARN
+	// We override the ServiceToken to be the Fenrir custom resource ARN
 	if res.Properties["ServiceToken"] != nil {
 		return resourceError(res, resourceName, "ServiceToken are overwritten")
 	}
 
+	// Force Fenrir SNS arn
 	res.Properties["ServiceToken"] = fmt.Sprintf("arn:aws:sns:%v:%v:%v", region, accountID, SNSTopicName)
 
 	bucket, _, uri, err := ValidateS3FilePropertyValues(res.Properties["Bucket"], res.Properties["Key"], res.Properties["Uri"])

@@ -31,7 +31,7 @@ func TestValidateS3EventWorks(t *testing.T) {
 func TestValidateKinesisEventWorks(t *testing.T) {
 
 	awsc := MockAwsClients()
-	err := ValidateKinesisEvent("project", "development", &resources.AWSServerlessFunction_KinesisEvent{
+	err := ValidateKinesisEvent("project", "development", "region", "accountID", &resources.AWSServerlessFunction_KinesisEvent{
 		Stream: "arn:aws:kinesis:us-east-1:000000000000:stream/<stream-name>",
 	}, awsc.KIN(nil, nil, nil))
 	assert.NoError(t, err)
@@ -51,7 +51,7 @@ func TestValidateDynamoDBEventWorks(t *testing.T) {
 func TestValidateSQSEventWorks(t *testing.T) {
 
 	awsc := MockAwsClients()
-	err := ValidateSQSEvent("project", "development", &resources.AWSServerlessFunction_SQSEvent{
+	err := ValidateSQSEvent("project", "development", "region", "accountID", &resources.AWSServerlessFunction_SQSEvent{
 		Queue: "arn:aws:sqs:us-east-1:000000000000:test-queue",
 	}, awsc.SQS(nil, nil, nil))
 	assert.NoError(t, err)
