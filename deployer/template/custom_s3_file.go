@@ -10,7 +10,7 @@ import (
 	"github.com/coinbase/step/utils/to"
 )
 
-var SNSTopicName = to.Strp("coinbase-fenrir-custom-resources")
+var SNSTopicName = "coinbase-fenrir-custom-resources"
 
 // AWS::Serverless::LayerVersion
 func ValidateCustomS3File(
@@ -56,6 +56,9 @@ func ValidateCustomS3File(
 	return nil
 }
 
+// ValidateS3FilePropertyValues validates the values
+// is also called by the CustomResource handler
+// So this functino
 func ValidateS3FilePropertyValues(bucketI, keyI, uriI interface{}) (string, string, string, error) {
 	// Validate presence (although schema should also validate)
 	if bucketI == nil || keyI == nil || uriI == nil {

@@ -137,6 +137,7 @@ Resources:
                   - "apigateway:*"
                   - "s3:*"
                   - "sns:*"
+                  - "sqs:*"
                   - "lambda:*"
                   - "cloudformation:*"
                   - "ec2:*"
@@ -186,9 +187,18 @@ Resources:
   CustomResourceSNSPolicy:
     Type: AWS::SNS::TopicPolicy
     Properties:
-      PolicyDocument: "{}"
+      PolicyDocument:
+        Id: CustomResourceSNSPolicy
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            AWS:
+            - !GetAtt FenrirAssumedRole.Arn
+          Action: sns:Publish
+          Resource: "*"
       Topics:
-        - coinbase-fenrir-custom-resources
+      - !Ref CustomResourceSNS
 
   ###
   # Lambda Function

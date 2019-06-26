@@ -2,7 +2,7 @@ package deployer
 
 import (
 	"github.com/coinbase/fenrir/aws"
-	"github.com/coinbase/fenrir/deployer/static"
+	"github.com/coinbase/fenrir/deployer/custom"
 	"github.com/coinbase/step/handler"
 	"github.com/coinbase/step/machine"
 )
@@ -240,7 +240,7 @@ func TaskHandlers() *handler.TaskHandlers {
 func CreateTaskHandlers(awsc aws.Clients) *handler.TaskHandlers {
 	tm := handler.TaskHandlers{}
 
-	tm[""] = static.StaticSiteResources(awsc)
+	tm[""] = custom.CustomResourceFn(awsc)
 
 	tm["Validate"] = Validate(awsc)
 	tm["Lock"] = Lock(awsc)

@@ -9,7 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/fenrir/aws/cf"
-	"github.com/coinbase/fenrir/deployer/static"
+	"github.com/coinbase/fenrir/deployer/custom"
 	"github.com/coinbase/fenrir/deployer/template"
 
 	"github.com/coinbase/step/aws/s3"
@@ -122,7 +122,7 @@ func JSONSchema() (string, error) {
 		return "", err
 	}
 
-	if err := json.Unmarshal([]byte(static.S3FileSchema), &s3FileSchema); err != nil {
+	if err := json.Unmarshal([]byte(custom.S3FileSchema), &s3FileSchema); err != nil {
 		return "", err
 	}
 

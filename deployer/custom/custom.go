@@ -1,14 +1,14 @@
-package static
+package custom
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"path/filepath"
 	"strings"
 
 	"github.com/aws/aws-lambda-go/cfn"
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/fenrir/deployer/template"
 	"github.com/coinbase/step/utils/to"
@@ -16,17 +16,65 @@ import (
 
 var assumedRole = to.Strp("coinbase-fenrir-assumed")
 
-// Wrap the
-func StaticSiteResources(awsc aws.Clients) func(context.Context, events.SNSEvent) (interface{}, error) {
-	// Wrapper adds the call backs to Cloudformation
-	customResourceHandler = cfn.LambdaWrap(staticSiteResources(awsc))
-
-	return
+type SNSEvent struct {
+	raw     string
+	Records []SNSEventRecord `json:"Records"`
 }
 
-func staticSiteResources(awsc aws.Clients) func(context.Context, cfn.Event) (string, map[string]interface{}, error) {
+func (message *SNSEvent) UnmarshalJSON(data []byte) error {
+	type xSNSEvent SNSEvent
+	var rawMessageX xSNSEvent
+
+	if err := json.Unmarshal(data, &rawMessageX); err != nil {
+		return err
+	}
+
+	*message = SNSEvent{
+		Records: rawMessageX.Records,
+		raw:     string(data),
+	}
+
+	return nil
+}
+
+type SNSEventRecord struct {
+	SNS SNSEntity `json:"Sns"`
+}
+
+type SNSEntity struct {
+	Message string `json:"Message"`
+}
+
+// Wrap the
+func CustomResourceFn(awsc aws.Clients) func(context.Context, SNSEvent) (interface{}, error) {
+	// SNS fn, wrapping Cloudformation function, wrapping custom resource fn
+	return snsWrapperFn(cfn.LambdaWrap(customResourceFn(awsc)))
+}
+
+func snsWrapperFn(wrappedFn cfn.CustomResourceLambdaFunction) func(context.Context, SNSEvent) (interface{}, error) {
+	return func(ctx context.Context, event SNSEvent) (interface{}, error) {
+		// Print out the RawInput for debugging and error handling
+		fmt.Println(event.raw)
+
+		if len(event.Records) != 1 {
+			return nil, fmt.Errorf("Must have exactly 1 record")
+		}
+
+		record := event.Records[0]
+
+		var cfnEvent cfn.Event
+		err := json.Unmarshal([]byte(record.SNS.Message), &cfnEvent)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return wrappedFn(ctx, cfnEvent)
+	}
+}
+
+func customResourceFn(awsc aws.Clients) func(context.Context, cfn.Event) (string, map[string]interface{}, error) {
 	return func(ctx context.Context, event cfn.Event) (string, map[string]interface{}, error) {
-		// TODO: Validate in S3 this is a real release, so someone cant just upload anything to any S3 Bucket
 		region, accountID, _ := to.ArnRegionAccountResource(event.StackID)
 		lambdas3c := awsc.S3(nil, nil, nil)
 		s3c := awsc.S3(&region, &accountID, assumedRole)
