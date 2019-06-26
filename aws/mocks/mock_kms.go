@@ -13,7 +13,7 @@ type KMSClient struct {
 func (m *KMSClient) DescribeKey(in *kms.DescribeKeyInput) (*kms.DescribeKeyOutput, error) {
 	return &kms.DescribeKeyOutput{
 		KeyMetadata: &kms.KeyMetadata{
-			Arn: to.Strp("kms_arn"),
+			Arn: to.Strp("arn:aws:kms:us-east-1:000000000000:key/00000000-0000-0000-0000-000000000000"),
 		},
 	}, nil
 }

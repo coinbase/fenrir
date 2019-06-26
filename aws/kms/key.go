@@ -2,6 +2,7 @@ package kms
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/coinbase/fenrir/aws"
@@ -10,7 +11,7 @@ import (
 
 // SecurityGroup struct
 type Key struct {
-	Arn  string
+	Id   string
 	Tags map[string]string
 }
 
@@ -27,8 +28,14 @@ func FindKey(kmsc aws.KMSAPI, keyalias string) (*Key, error) {
 		return nil, fmt.Errorf("Cannot find key %q", keyalias)
 	}
 
+	arnSplit := strings.SplitN(*desc.KeyMetadata.Arn, "/", 2)
+
+	if len(arnSplit) != 2 {
+		return nil, fmt.Errorf("Key incorrect ARN")
+	}
+
 	key := Key{
-		Arn:  *desc.KeyMetadata.Arn,
+		Id:   arnSplit[1],
 		Tags: map[string]string{},
 	}
 
