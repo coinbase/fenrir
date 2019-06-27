@@ -4,6 +4,7 @@ step
 lambda
 lambda.zip
 /template.yml
+/examples/hello/template.yml.*
 packaged-template.yml
 tmp
 coverage.out

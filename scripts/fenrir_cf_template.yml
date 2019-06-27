@@ -72,6 +72,12 @@ Resources:
                 NotResource:
                   - !Sub "arn:aws:s3:::coinbase-fenrir-${AWS::AccountId}/*"
                   - !GetAtt FenrirBucket.Arn
+              - Effect: "Allow"
+                Resource: "arn:aws:logs:*:*:log-group:/aws/lambda/*"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
   # Step Function
   FenrirStepRole:
     Type: "AWS::IAM::Role"
@@ -131,6 +137,7 @@ Resources:
                   - "apigateway:*"
                   - "s3:*"
                   - "sns:*"
+                  - "sqs:*"
                   - "lambda:*"
                   - "cloudformation:*"
                   - "ec2:*"
@@ -181,6 +188,7 @@ Resources:
       CodeUri: "./lambda.zip"
       Runtime: "go1.x"
       Timeout: 30
+
 
   # Step Function
   FenrirStepFunction:
