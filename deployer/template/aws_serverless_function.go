@@ -150,6 +150,10 @@ func ValidateFunctionIAM(
 				if err != nil {
 					return resourceError(fun, resourceName, fmt.Sprintf("KMSDecryptPolicy %v", err.Error()))
 				}
+
+				// Overwrite keyID to be Key Id (in cases where it was set to an alias)
+				p.KMSDecryptPolicy.KeyId = key.Id
+
 				err = hasCorrectTags(projectName, configName, key.Tags)
 				if err != nil {
 					return resourceError(fun, resourceName, fmt.Sprintf("KMSDecryptPolicy %v", err.Error()))
