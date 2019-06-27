@@ -219,6 +219,7 @@ Resources:
             Topic: !Ref CustomResourceSNS
 
 
+
   # Step Function
   FenrirStepFunction:
     Type: "AWS::StepFunctions::StateMachine"
