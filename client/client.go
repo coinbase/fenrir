@@ -27,8 +27,9 @@ func prepareRelease(release *deployer.Release, region *string, accountID *string
 }
 
 type ProjectConfig struct {
-	ProjectName *string `json:"ProjectName"`
-	ConfigName  *string `json:"ConfigName"`
+	ProjectName  *string `json:"ProjectName"`
+	ConfigName   *string `json:"ConfigName"`
+	AwsAccountID *string `json:"AwsAccountID"`
 }
 
 func parseRelease(releaseFile string) (*deployer.Release, string, error) {
@@ -45,6 +46,7 @@ func parseRelease(releaseFile string) (*deployer.Release, string, error) {
 	release := deployer.Release{}
 	release.ProjectName = projectConfig.ProjectName
 	release.ConfigName = projectConfig.ConfigName
+	release.AwsAccountID = projectConfig.AwsAccountID
 
 	if is.EmptyStr(release.ProjectName) || is.EmptyStr(release.ConfigName) {
 		return nil, "", fmt.Errorf("ProjectName or ConfigName is nil")
@@ -74,12 +76,12 @@ func parseTemplate(rawSAM string) (*cloudformation.Template, error) {
 	return template, nil
 }
 
-func zipFilePath(releaseFile *string, name string) string {
-	return fmt.Sprintf("%v.%v.zip", *releaseFile, name)
+func extractedFilePath(releaseFile string, name string) string {
+	return fmt.Sprintf("%v.%v", releaseFile, name)
 }
 
 func s3FilePath(release *deployer.Release, name string) string {
-	return fmt.Sprintf("%v/%v.zip", *release.ReleasePath(), name)
+	return fmt.Sprintf("%v/%v", *release.ReleasePath(), name)
 }
 
 func s3FileURI(release *deployer.Release, name string) string {

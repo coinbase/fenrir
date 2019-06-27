@@ -38,6 +38,9 @@ func Test_Successful_Execution(t *testing.T) {
 		t.Run(releaseFile, func(t *testing.T) {
 			release, err := MockRelease(releaseFile)
 			assert.NoError(t, err)
+			if err != nil {
+				return
+			}
 			assertSuccessfulExecution(t, release)
 		})
 
