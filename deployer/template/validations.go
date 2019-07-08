@@ -89,6 +89,16 @@ func ValidateTemplateResources(
 				return err
 			}
 
+		case "AWS::CloudFront::Distribution":
+			res, err := template.GetAWSCloudFrontDistributionWithName(name)
+			if err != nil {
+				return err
+			}
+
+			if err := ValidateAWSCloudFrontDistribution(projectName, configName, name, template, res); err != nil {
+				return err
+			}
+
 		default:
 			return fmt.Errorf("Unsupported type %q for %q", a.AWSCloudFormationType(), name)
 		}

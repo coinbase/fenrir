@@ -149,6 +149,7 @@ Resources:
                   - "autoscaling:CompleteLifecycleAction"
                   - "kms:DescribeKey"
                   - "kms:ListResourceTags"
+                  - "cloudfront:*"
                 Resource: "*"
               - Effect: "Allow"
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/fenrir-*"
