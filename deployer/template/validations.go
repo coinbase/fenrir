@@ -69,15 +69,15 @@ func ValidateTemplateResources(
 				return err
 			}
 
-                case "AWS::SQS::Queue":
-                        res, err := template.GetAWSSQSQueueWithName(name)
-                        if err != nil {
-                                return err
-                        }
+		case "AWS::SQS::Queue":
+			res, err := template.GetAWSSQSQueueWithName(name)
+			if err != nil {
+				return err
+			}
 
-                        if err := ValidateAWSSQSQueue(projectName, configName, name, template, res); err != nil {
-                                return err
-                        }
+			if err := ValidateAWSSQSQueue(projectName, configName, name, template, res); err != nil {
+				return err
+			}
 
 		default:
 			return fmt.Errorf("Unsupported type %q for %q", a.AWSCloudFormationType(), name)
