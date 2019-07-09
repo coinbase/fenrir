@@ -12,6 +12,9 @@ func ValidateAWSCloudFrontDistribution(
 	template *cloudformation.Template,
 	res *resources.AWSCloudFrontDistribution,
 ) error {
-	// Todo: What do we want to validate?
+	res.Tags = append(res.Tags, resources.Tag{Key: "ProjectName", Value: projectName})
+	res.Tags = append(res.Tags, resources.Tag{Key: "ConfigName", Value: configName})
+	res.Tags = append(res.Tags, resources.Tag{Key: "ServiceName", Value: resourceName})
+
 	return nil
 }
