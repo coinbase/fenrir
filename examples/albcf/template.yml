@@ -13,6 +13,7 @@ Resources:
     Properties:
       StageName: dev
       EndpointConfiguration: REGIONAL
+
   basicHello:
     Type: AWS::Serverless::Function
     Properties:
@@ -21,6 +22,14 @@ Resources:
       Runtime: go1.x
       Timeout: 5
       Role: default@lambda
+
+  basicHelloPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Sub ${basicHello.Arn}
+      Principal: elasticloadbalancing.amazonaws.com
+
   hello:
     Type: AWS::Serverless::Function
     Properties:
@@ -43,25 +52,67 @@ Resources:
             RestApiId: !Ref helloAPI
             Path: /hello
             Method: GET
+
   cloudfront:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
         Origins:
-        - DomainName: www.example.com
-          Id: myCustomOrigin
+        - DomainName: !Sub ${lb.DNSName}
+          Id: loadBalancer
           CustomOriginConfig:
             HTTPPort: 80
-            HTTPSPort: 443
             OriginProtocolPolicy: http-only
         Enabled: true
         DefaultCacheBehavior:
-          TargetOriginId: myCustomOrigin
+          TargetOriginId: loadBalancer
           ForwardedValues:
-            QueryString: false
+            QueryString: true
             Cookies:
               Forward: all
           ViewerProtocolPolicy: allow-all
+
+  lb:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: application
+      Subnets:
+        - subnet-5ec27260
+        - subnet-7dd4bc53
+
+  lbListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref lb
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+      - Type: fixed-response
+        FixedResponseConfig:
+          StatusCode: "404"
+
+  lbHelloRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+      - Type: forward
+        TargetGroupArn: !Ref lbHelloTarget
+      Conditions:
+      - Field: path-pattern
+        Values:
+        - /hello
+      ListenerArn: !Ref lbListener
+      Priority: 10
+    dependsOn:
+    - basicHelloPermission
+
+  lbHelloTarget:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      TargetType: lambda
+      Targets:
+      - Id: !Sub ${basicHello.Arn}
+
   helloTable:
     Type: AWS::Serverless::SimpleTable
     DeletionPolicy: Delete

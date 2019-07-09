@@ -150,6 +150,7 @@ Resources:
                   - "kms:DescribeKey"
                   - "kms:ListResourceTags"
                   - "cloudfront:*"
+                  - "elasticloadbalancing:*"
                 Resource: "*"
               - Effect: "Allow"
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/fenrir-*"

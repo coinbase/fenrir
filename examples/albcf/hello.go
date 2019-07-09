@@ -6,6 +6,14 @@ import (
 
 func main() {
 	lambda.Start(func(_ interface{}) (interface{}, error) {
-		return map[string]string{"body": "Hello"}, nil
+		return map[string]interface{}{
+			"isBase64Encoded": false,
+		    "statusCode": 200,
+		    "statusDescription": "200 OK",
+		    "headers": map[string]interface{}{
+		        "Content-Type": "text/plain",
+		    },
+			"body": "Hello",
+		}, nil
 	})
 }

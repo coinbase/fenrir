@@ -99,6 +99,56 @@ func ValidateTemplateResources(
 				return err
 			}
 
+		case "AWS::ElasticLoadBalancingV2::LoadBalancer":
+			res, err := template.GetAWSElasticLoadBalancingV2LoadBalancerWithName(name)
+			if err != nil {
+				return err
+			}
+
+			if err := ValidateAWSElasticLoadBalancingV2LoadBalancer(projectName, configName, name, template, ec2c, res); err != nil {
+				return err
+			}
+
+		case "AWS::ElasticLoadBalancingV2::TargetGroup":
+			res, err := template.GetAWSElasticLoadBalancingV2TargetGroupWithName(name)
+			if err != nil {
+				return err
+			}
+
+			if err := ValidateAWSElasticLoadBalancingV2TargetGroup(projectName, configName, name, template, res); err != nil {
+				return err
+			}
+
+		case "AWS::ElasticLoadBalancingV2::Listener":
+			res, err := template.GetAWSElasticLoadBalancingV2ListenerWithName(name)
+			if err != nil {
+				return err
+			}
+
+			if err := ValidateAWSElasticLoadBalancingV2Listener(projectName, configName, name, template, res); err != nil {
+				return err
+			}
+
+		case "AWS::ElasticLoadBalancingV2::ListenerRule":
+			res, err := template.GetAWSElasticLoadBalancingV2ListenerRuleWithName(name)
+			if err != nil {
+				return err
+			}
+
+			if err := ValidateAWSElasticLoadBalancingV2ListenerRule(projectName, configName, name, template, res); err != nil {
+				return err
+			}
+
+		case "AWS::Lambda::Permission":
+			res, err := template.GetAWSLambdaPermissionWithName(name)
+			if err != nil {
+				return err
+			}
+
+			if err := ValidateAWSLambdaPermission(projectName, configName, name, template, res); err != nil {
+				return err
+			}
+
 		default:
 			return fmt.Errorf("Unsupported type %q for %q", a.AWSCloudFormationType(), name)
 		}
