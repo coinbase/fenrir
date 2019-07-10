@@ -12,7 +12,7 @@ func ValidateAWSElasticLoadBalancingV2Listener(
 ) error {
 	ref, err := decodeRef(res.LoadBalancerArn)
 	if err != nil || ref == "" {
-		return resourceError(res, resourceName, "LoadbalancerListener.LoadBalancerArn must be !Ref")
+		return resourceError(res, resourceName, "Listener.LoadBalancerArn must be !Ref")
 	}
 
 	return nil

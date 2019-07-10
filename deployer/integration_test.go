@@ -136,7 +136,15 @@ var badFiles = []struct {
 	},
 	{
 		File:     "../examples/tests/not/bad_lb_listener.yml",
-		ErrorStr: `LoadbalancerListener.LoadBalancerArn must be !Ref`,
+		ErrorStr: `Listener.LoadBalancerArn must be !Ref`,
+	},
+	{
+		File:     "../examples/tests/not/bad_lambda_permission.yml",
+		ErrorStr: `Lambda::Permission.Action must be lambda:InvokeFunction`,
+	},
+	{
+		File:     "../examples/tests/not/bad_lambda_permission_func.yml",
+		ErrorStr: `Lambda::Permission.FunctionName must be "!GetAtt <lambdaName> Arn"`,
 	},
 }
 

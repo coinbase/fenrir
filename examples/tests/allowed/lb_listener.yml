@@ -18,3 +18,41 @@ Resources:
       - Type: fixed-response
         FixedResponseConfig:
           StatusCode: "404"
+
+  basicHello:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://bucket/path.zip
+      Handler: hello.lambda
+      Runtime: go1.x
+      Timeout: 5
+      Role: role_correct
+
+  basicHelloPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt [basicHello, Arn]
+      Principal: elasticloadbalancing.amazonaws.com
+
+  lbHelloRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+      - Type: forward
+        TargetGroupArn: !Ref lbHelloTarget
+      Conditions:
+      - Field: path-pattern
+        Values:
+        - /hello
+      ListenerArn: !Ref lbListener
+      Priority: 10
+    dependsOn:
+    - basicHelloPermission
+
+  lbHelloTarget:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      TargetType: lambda
+      Targets:
+      - Id: !Sub ${basicHello.Arn}
