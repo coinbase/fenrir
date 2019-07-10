@@ -1,0 +1,13 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  lbListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: arn:aws:elasticloadbalancing:us-east-1:123456789123:loadbalancer/app/fenrir-coinbase-fenrir-a57cc8e84/0be229c1a87e4097
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+      - Type: fixed-response
+        FixedResponseConfig:
+          StatusCode: "404"

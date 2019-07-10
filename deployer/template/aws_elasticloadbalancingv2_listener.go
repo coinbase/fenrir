@@ -10,5 +10,10 @@ func ValidateAWSElasticLoadBalancingV2Listener(
 	template *cloudformation.Template,
 	res *resources.AWSElasticLoadBalancingV2Listener,
 ) error {
+	ref, err := decodeRef(res.LoadBalancerArn)
+	if err != nil || ref == "" {
+		return resourceError(res, resourceName, "LoadbalancerListener.LoadBalancerArn must be !Ref")
+	}
+
 	return nil
 }
