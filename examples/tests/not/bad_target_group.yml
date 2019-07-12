@@ -1,0 +1,9 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  lbHelloTarget:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      TargetType: lambda
+      Targets:
+      - Id: arn:aws:lambda:us-east-1:123456789123:function:coinbase-fenrir

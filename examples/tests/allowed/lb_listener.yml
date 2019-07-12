@@ -55,4 +55,4 @@ Resources:
     Properties:
       TargetType: lambda
       Targets:
-      - Id: !Sub ${basicHello.Arn}
+      - Id: !GetAtt [basicHello, Arn]

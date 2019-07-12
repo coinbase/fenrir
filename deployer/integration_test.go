@@ -146,6 +146,10 @@ var badFiles = []struct {
 		File:     "../examples/tests/not/bad_lambda_permission_func.yml",
 		ErrorStr: `Lambda::Permission.FunctionName must be "!GetAtt <lambdaName> Arn"`,
 	},
+	{
+		File:     "../examples/tests/not/bad_target_group.yml",
+		ErrorStr: `TargetGroup.Targets.Id must be "!GetAtt <lambdaName> Arn"`,
+	},
 }
 
 func Test_Unsuccessful_Execution(t *testing.T) {
