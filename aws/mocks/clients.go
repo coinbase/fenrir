@@ -7,31 +7,33 @@ import (
 
 // MockClients struct
 type MockClients struct {
-	S3Client  *mocks.MockS3Client
-	CFClient  *CFClient
-	EC2Client *EC2Client
-	IAMClient *IAMClient
-	SFNClient *mocks.MockSFNClient
-	SNSClient *SNSClient
-	KINClient *KINClient
-	DDBClient *DDBClient
-	SQSClient *SQSClient
-	KMSClient *KMSClient
+	S3Client     *mocks.MockS3Client
+	CFClient     *CFClient
+	EC2Client    *EC2Client
+	IAMClient    *IAMClient
+	SFNClient    *mocks.MockSFNClient
+	SNSClient    *SNSClient
+	KINClient    *KINClient
+	DDBClient    *DDBClient
+	SQSClient    *SQSClient
+	KMSClient    *KMSClient
+	LambdaClient *LambdaClient
 }
 
 // MockAWS mock clients
 func MockAWS() *MockClients {
 	return &MockClients{
-		S3Client:  &mocks.MockS3Client{},
-		CFClient:  &CFClient{},
-		EC2Client: &EC2Client{},
-		IAMClient: &IAMClient{},
-		SFNClient: &mocks.MockSFNClient{},
-		SNSClient: &SNSClient{},
-		KINClient: &KINClient{},
-		DDBClient: &DDBClient{},
-		SQSClient: &SQSClient{},
-		KMSClient: &KMSClient{},
+		S3Client:     &mocks.MockS3Client{},
+		CFClient:     &CFClient{},
+		EC2Client:    &EC2Client{},
+		IAMClient:    &IAMClient{},
+		SFNClient:    &mocks.MockSFNClient{},
+		SNSClient:    &SNSClient{},
+		KINClient:    &KINClient{},
+		DDBClient:    &DDBClient{},
+		SQSClient:    &SQSClient{},
+		KMSClient:    &KMSClient{},
+		LambdaClient: &LambdaClient{},
 	}
 }
 
@@ -78,4 +80,8 @@ func (a *MockClients) SQS(*string, *string, *string) aws.SQSAPI {
 
 func (a *MockClients) KMS(*string, *string, *string) aws.KMSAPI {
 	return a.KMSClient
+}
+
+func (a *MockClients) Lambda(*string, *string, *string) aws.LambdaAPI {
+	return a.LambdaClient
 }

@@ -23,6 +23,7 @@ func ValidateTemplateResources(
 	sqsc aws.SQSAPI,
 	snsc aws.SNSAPI,
 	kmsc aws.KMSAPI,
+	lambdac aws.LambdaAPI,
 ) error {
 
 	for name, a := range template.Resources {
@@ -115,7 +116,7 @@ func ValidateTemplateResources(
 				return err
 			}
 
-			if err := ValidateAWSElasticLoadBalancingV2TargetGroup(projectName, configName, name, template, res); err != nil {
+			if err := ValidateAWSElasticLoadBalancingV2TargetGroup(projectName, configName, name, template, lambdac, res); err != nil {
 				return err
 			}
 

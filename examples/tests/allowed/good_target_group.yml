@@ -6,4 +6,4 @@ Resources:
     Properties:
       TargetType: lambda
       Targets:
-      - Id: wrong_lambda_arn
+      - Id: valid_lambda_arn

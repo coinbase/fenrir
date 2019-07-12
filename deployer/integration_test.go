@@ -148,7 +148,7 @@ var badFiles = []struct {
 	},
 	{
 		File:     "../examples/tests/not/bad_target_group.yml",
-		ErrorStr: `TargetGroup.Targets.Id must be "!GetAtt <lambdaName> Arn"`,
+		ErrorStr: `TargetGroup.Target ProjectName \(project != project\) OR ConfigName \(otherconfig != development\) tags incorrect`,
 	},
 }
 

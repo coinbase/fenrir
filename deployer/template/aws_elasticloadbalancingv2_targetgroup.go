@@ -1,13 +1,18 @@
 package template
 
 import (
+	"fmt"
+
 	"github.com/awslabs/goformation/cloudformation"
 	"github.com/awslabs/goformation/cloudformation/resources"
+	"github.com/coinbase/fenrir/aws"
+	"github.com/coinbase/fenrir/aws/lambda"
 )
 
 func ValidateAWSElasticLoadBalancingV2TargetGroup(
 	projectName, configName, resourceName string,
 	template *cloudformation.Template,
+	lambdac aws.LambdaAPI,
 	res *resources.AWSElasticLoadBalancingV2TargetGroup,
 ) error {
 	res.Name = normalizeName("fenrir", projectName, configName, resourceName, 32)
@@ -27,9 +32,30 @@ func ValidateAWSElasticLoadBalancingV2TargetGroup(
 	for _, target := range res.Targets {
 		args, err := decodeGetAtt(target.Id)
 		if err != nil || len(args) != 2 || args[1] != "Arn" {
-			return resourceError(res, resourceName, "TargetGroup.Targets.Id must be \"!GetAtt <lambdaName> Arn\"")
+			lambda, err := lambda.FindFunction(lambdac, target.Id)
+			if err != nil {
+				return resourceError(res, resourceName, "TargetGroup.Targets.Id must be \"!GetAtt <lambdaName> Arn\" or a valid lambda ARN")
+			}
+
+			if err := hasCorrectTags(projectName, configName, convTagMap(lambda.Tags)); err != nil {
+				return resourceError(res, resourceName, fmt.Sprintf("TargetGroup.Target %v", err.Error()))
+			}
 		}
 	}
 
 	return nil
+}
+
+func convTagMap(tags map[string]*string) map[string]string {
+	newTags := map[string]string{}
+
+	for k, v := range tags {
+		if v == nil {
+			newTags[k] = ""
+		} else {
+			newTags[k] = *v
+		}
+	}
+
+	return newTags
 }
