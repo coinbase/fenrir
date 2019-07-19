@@ -21,6 +21,16 @@ func ValidateAWSElasticLoadBalancingV2TargetGroup(
 	res.Tags = append(res.Tags, resources.Tag{Key: "ConfigName", Value: configName})
 	res.Tags = append(res.Tags, resources.Tag{Key: "ServiceName", Value: resourceName})
 
+	if res.TargetType == "instance" {
+		// Currently only allow empty targets list - this allows ASGs to attach targets
+		// but no individual instances can be added.
+		if len(res.Targets) != 0 {
+			return resourceError(res, resourceName, "TargetGroup.Targets must be empty for TargetType instance")
+		}
+
+		return nil
+	}
+
 	// Only allow lambda targets for now
 	if res.TargetType != "lambda" {
 		return resourceError(res, resourceName, "TargetGroup.TargetType must be lambda")

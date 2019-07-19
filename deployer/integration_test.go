@@ -150,6 +150,10 @@ var badFiles = []struct {
 		File:     "../examples/tests/not/bad_target_group.yml",
 		ErrorStr: `TargetGroup.Target ProjectName \(project != project\) OR ConfigName \(otherconfig != development\) tags incorrect`,
 	},
+	{
+		File:     "../examples/tests/not/bad_target_group_instance.yml",
+		ErrorStr: `TargetGroup.Targets must be empty for TargetType instance`,
+	},
 }
 
 func Test_Unsuccessful_Execution(t *testing.T) {
