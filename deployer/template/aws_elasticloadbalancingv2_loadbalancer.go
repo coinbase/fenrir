@@ -25,6 +25,10 @@ func ValidateAWSElasticLoadBalancingV2LoadBalancer(
 		return resourceError(res, resourceName, "Only application load balancers are supported")
 	}
 
+	if res.IpAddressType != "ipv4" {
+		return resourceError(res, resourceName, "Only ipv4 load balancers are supported")
+	}
+
 	if res.SecurityGroups != nil {
 		if err := ValidateLoadbalancerSecurityGroups(projectName, configName, resourceName, res, ec2c); err != nil {
 			return resourceError(res, resourceName, err.Error())
