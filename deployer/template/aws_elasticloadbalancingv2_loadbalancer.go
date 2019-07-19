@@ -25,7 +25,8 @@ func ValidateAWSElasticLoadBalancingV2LoadBalancer(
 		return resourceError(res, resourceName, "Only application load balancers are supported")
 	}
 
-	if res.IpAddressType != "ipv4" {
+	// Ipv4 is the default, so empty is fine too
+	if res.IpAddressType != "" && res.IpAddressType != "ipv4" {
 		return resourceError(res, resourceName, "Only ipv4 load balancers are supported")
 	}
 
