@@ -26,10 +26,9 @@ func ValidateAWSElasticLoadBalancingV2TargetGroup(
 		return resourceError(res, resourceName, "TargetGroup.TargetType must be lambda")
 	}
 
-	// Only allow lambdas created in this template.
-	// In the future we'll want to allow targets to be any lambda with correct tags
-	// (tags specifically allowing this project or all fenrir projects)
 	for _, target := range res.Targets {
+		// Target can either be a lambda defined in this template (using !GetAtt to get the arn)
+		// Or it can be a function name, arn, or partial arn of a lambda with the correct fenrir tags.
 		args, err := decodeGetAtt(target.Id)
 		if err != nil || len(args) != 2 || args[1] != "Arn" {
 			lambda, err := lambda.FindFunction(lambdac, target.Id)
