@@ -84,6 +84,14 @@ var badFiles = []struct {
 		ErrorStr: `AWS::Serverless::Function#hello: VpcConfig Incorrect ProjectName for SecurityGroup: has "bad" requires "project"`,
 	},
 	{
+		File:     "../examples/tests/not/bad_lambda_permission.yml",
+		ErrorStr: `Lambda::Permission.Action must be lambda:InvokeFunction`,
+	},
+	{
+		File:     "../examples/tests/not/bad_lambda_permission_func.yml",
+		ErrorStr: `Lambda::Permission.FunctionName must be "!GetAtt <lambdaName> Arn"`,
+	},
+	{
 		File:     "../examples/tests/not/bad_subnet.yml",
 		ErrorStr: `AWS::Serverless::Function#hello: VpcConfig Validate Subnet Error DeployWithFenrir Tag is nil`,
 	},

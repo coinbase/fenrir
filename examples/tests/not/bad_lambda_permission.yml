@@ -1,0 +1,18 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  basicHello:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://bucket/path.zip
+      Handler: hello.lambda
+      Runtime: go1.x
+      Timeout: 5
+      Role: role_correct
+
+  basicHelloPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:GetFunction # Bad permission, we only allow invoke.
+      FunctionName: !GetAtt [basicHello, Arn]
+      Principal: elasticloadbalancing.amazonaws.com
