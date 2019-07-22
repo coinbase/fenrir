@@ -16,8 +16,8 @@ func ValidateAWSLambdaPermission(
 
 	// Currently we only allow permissions to grant access to ELB
 	// We can add other things here as we need them
-	if res.Principal != "elasticloadbalancing.amazonaws.com" {
-		return resourceError(res, resourceName, "Lambda::Permission.Principal must be elasticloadbalancing.amazonaws.com")
+	if !(res.Principal == "elasticloadbalancing.amazonaws.com" || res.Principal == "secretsmanager.amazonaws.com") {
+		return resourceError(res, resourceName, res.Principal+" is not a currently supported value for Lambda::Permission.Principal")
 	}
 
 	args, err := decodeGetAtt(res.FunctionName)
