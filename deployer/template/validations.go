@@ -28,16 +28,6 @@ func ValidateTemplateResources(
 
 	for name, a := range template.Resources {
 		switch a.AWSCloudFormationType() {
-		case "AWS::Lambda::Permission":
-			res, err := template.GetAWSLambdaPermissionWithName(name)
-			if err != nil {
-				return err
-			}
-
-			if err := ValidateAWSLambdaPermission(projectName, configName, name, template, res); err != nil {
-				return err
-			}
-
 		case "AWS::Serverless::Function":
 			res, err := template.GetAWSServerlessFunctionWithName(name)
 			if err != nil {
