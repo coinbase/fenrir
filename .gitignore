@@ -1,8 +1,8 @@
 .DS_Store
 step.zip
 step
-lambda
-lambda.zip
+/lambda.zip
+/fenrir
 /template.yml
 /examples/hello/template.yml.*
 packaged-template.yml

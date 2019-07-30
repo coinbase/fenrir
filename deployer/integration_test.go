@@ -1,6 +1,7 @@
 package deployer
 
 import (
+	"io/ioutil"
 	"testing"
 	"time"
 
@@ -13,23 +14,17 @@ import (
 // Successful Tests
 ///////////////
 
-var goodReleases = []string{
-	"../examples/tests/allowed/api_private.yml",
-	"../examples/tests/allowed/api.yml",
-	"../examples/tests/allowed/function.yml",
-	"../examples/tests/allowed/function_api.yml",
-	"../examples/tests/allowed/function_w_policies.yml",
-	"../examples/tests/allowed/layer.yml",
-	"../examples/tests/allowed/table.yml",
-	"../examples/tests/allowed/s3_event.yml",
-	"../examples/tests/allowed/sns_event.yml",
-	"../examples/tests/allowed/sqs_event.yml",
-	"../examples/tests/allowed/sqs_ref_event.yml",
-	"../examples/tests/allowed/kinesis_event.yml",
-	"../examples/tests/allowed/dynamo_event.yml",
-	"../examples/tests/allowed/cloudwatch.yml",
-	"../examples/tests/allowed/cloudevent.yml",
-	"../examples/tests/allowed/multiple_functions.yml",
+var goodReleases = []string{}
+
+func init() {
+	files, err := ioutil.ReadDir("../examples/tests/allowed/")
+	if err != nil {
+		panic("Couldn't find examples files")
+	}
+
+	for _, file := range files {
+		goodReleases = append(goodReleases, "../examples/tests/allowed/"+file.Name())
+	}
 }
 
 func Test_Successful_Execution(t *testing.T) {
@@ -138,6 +133,26 @@ var badFiles = []struct {
 	{
 		File:     "../examples/tests/not/invalid_event_schema.yml",
 		ErrorStr: `StartingPosition is required`,
+	},
+	{
+		File:     "../examples/tests/not/bad_lb_listener.yml",
+		ErrorStr: `Listener.LoadBalancerArn must be !Ref`,
+	},
+	{
+		File:     "../examples/tests/not/bad_lambda_permission.yml",
+		ErrorStr: `Lambda::Permission.Action must be lambda:InvokeFunction`,
+	},
+	{
+		File:     "../examples/tests/not/bad_lambda_permission_func.yml",
+		ErrorStr: `Lambda::Permission.FunctionName must be "!GetAtt <lambdaName> Arn"`,
+	},
+	{
+		File:     "../examples/tests/not/bad_target_group.yml",
+		ErrorStr: `TargetGroup.Target ProjectName \(project != project\) OR ConfigName \(otherconfig != development\) tags incorrect`,
+	},
+	{
+		File:     "../examples/tests/not/bad_target_group_instance.yml",
+		ErrorStr: `TargetGroup.Targets must be empty for TargetType instance`,
 	},
 }
 

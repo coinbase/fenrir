@@ -17,15 +17,15 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: s3://bucket/path.zip
-      Role: coinbase-fenrir-lambda-role
+      Role: role_correct
       Handler: hello.lambda
       Runtime: go1.x
       Timeout: 5
       VpcConfig:
         SecurityGroupIds:
-          - lambda::default
+          - sg_correct
         SubnetIds:
-          - test_private_subnet_a
+          - subnet_correct
       Events:
         CatchAll:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api

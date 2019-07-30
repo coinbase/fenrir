@@ -13,6 +13,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/kinesis/kinesisiface"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/kms/kmsiface"
+	"github.com/aws/aws-sdk-go/service/lambda"
+	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/aws/aws-sdk-go/service/sfn"
@@ -110,6 +112,9 @@ type SQSAPI sqsiface.SQSAPI
 // KMSAPI KMS api
 type KMSAPI kmsiface.KMSAPI
 
+// LambdaAPI aws api
+type LambdaAPI lambdaiface.LambdaAPI
+
 // Clients for AWS
 type Clients interface {
 	S3(region *string, accountID *string, role *string) S3API
@@ -122,6 +127,7 @@ type Clients interface {
 	DDB(region *string, accountID *string, role *string) DDBAPI
 	SQS(region *string, accountID *string, role *string) SQSAPI
 	KMS(region *string, accountID *string, role *string) KMSAPI
+	Lambda(region *string, accountID *string, role *string) LambdaAPI
 }
 
 // ClientsStr implementation
@@ -177,4 +183,9 @@ func (awsc *ClientsStr) SQS(region *string, accountID *string, role *string) SQS
 // KMS returns client
 func (awsc *ClientsStr) KMS(region *string, accountID *string, role *string) KMSAPI {
 	return kms.New(awsc.Session(), awsc.Config(region, accountID, role))
+}
+
+// LAMBDA returns client
+func (awsc *ClientsStr) Lambda(region *string, accountID *string, role *string) LambdaAPI {
+	return lambda.New(awsc.Session(), awsc.Config(region, accountID, role))
 }
