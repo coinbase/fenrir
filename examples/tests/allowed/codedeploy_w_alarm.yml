@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  hello:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://bucket/path.zip
+      Handler: hello-world
+      Runtime: go1.x
+      AutoPublishAlias: live
+      DeploymentPreference:
+        Type: CodeDeployDefault.LambdaAllAtOnce
+        Role: !Sub arn:aws:iam::${AWS::AccountId}:role/codedeploy-service-role
+      Policies:
+      - LambdaInvokePolicy:
+          FunctionName: !Ref hello
+      - VPCAccessPolicy: {}
+      - KMSDecryptPolicy:
+          KeyId: "alias"
+
+  LatestVersionErrorMetricGreaterThanZeroAlarm:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      AlarmDescription: Lambda Function Error > 0
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: Resource
+          Value: !Sub "${hello}:live"
+        - Name: FunctionName
+          Value: !Ref hello 
+        - Name: ExecutedVersion
+          Value: !GetAtt [hello.Version, Version]
+      EvaluationPeriods: 2
+      Namespace: AWS/Lambda
+      Period: 60
+      Statistic: Sum
+      Threshold: 0
+

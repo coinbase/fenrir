@@ -90,6 +90,16 @@ func ValidateTemplateResources(
 				return err
 			}
 
+		case "AWS::CloudWatch::Alarm":
+			res, err := template.GetAWSCloudWatchAlarmWithName(name)
+			if err != nil {
+				return err
+			}
+
+			if err := ValidateAWSCloudWatchAlarm(projectName, configName, name, template, res); err != nil {
+				return err
+			}
+
 		case "AWS::ElasticLoadBalancingV2::LoadBalancer":
 			res, err := template.GetAWSElasticLoadBalancingV2LoadBalancerWithName(name)
 			if err != nil {
