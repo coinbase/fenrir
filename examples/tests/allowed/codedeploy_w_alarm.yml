@@ -23,6 +23,7 @@ Resources:
     Properties:
       AlarmDescription: Lambda Function Error > 0
       ComparisonOperator: GreaterThanThreshold
+      MetricName: Errors
       Dimensions:
         - Name: Resource
           Value: !Sub "${hello}:live"

@@ -10,11 +10,11 @@ func ValidateAWSCloudWatchAlarm(
 	template *cloudformation.Template,
 	res *resources.AWSCloudWatchAlarm,
 ) error {
-	if res.MetricName != "" {
+	if res.AlarmName != "" {
 		return resourceError(res, resourceName, "Names are overwritten")
 	}
 
-	res.MetricName = normalizeName("fenrir", projectName, configName, resourceName, 255)
+	res.AlarmName = normalizeName("fenrir", projectName, configName, resourceName, 255)
 
 	return nil
 }
