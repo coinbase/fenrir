@@ -14,9 +14,13 @@ func ValidateAWSLambdaPermission(
 		return resourceError(res, resourceName, "Lambda::Permission.Action must be lambda:InvokeFunction")
 	}
 
-	// Currently we only allow permissions to grant access to ELB
-	// We can add other things here as we need them
-	if !(res.Principal == "elasticloadbalancing.amazonaws.com" || res.Principal == "secretsmanager.amazonaws.com") {
+	allowedPrincipals := []string {
+		"elasticloadbalancing.amazonaws.com",
+		"secretsmanager.amazonaws.com",
+		"apigateway.amazonaws.com",
+	}
+
+	if !(inSlice(res.Principal, allowedPrincipals)) {
 		return resourceError(res, resourceName, res.Principal+" is not a currently supported value for Lambda::Permission.Principal")
 	}
 
@@ -26,4 +30,13 @@ func ValidateAWSLambdaPermission(
 	}
 
 	return nil
+}
+
+func inSlice(str string, slice []string) bool {
+	for _, v := range slice {
+		if v == str {
+			return true
+		}
+	}
+	return false
 }
