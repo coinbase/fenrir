@@ -87,6 +87,10 @@ var badFiles = []struct {
 		ErrorStr: `Lambda::Permission.FunctionName must be "!GetAtt <lambdaName> Arn"`,
 	},
 	{
+		File:     "../examples/tests/not/bad_lambda_permission_principal.yml",
+		ErrorStr: `BadReleaseError: AWS::Lambda::Permission#basicHelloPermission: badprincipal.amazonaws.com is not a currently supported value for Lambda::Permission.Principal`,
+	},
+	{
 		File:     "../examples/tests/not/bad_subnet.yml",
 		ErrorStr: `AWS::Serverless::Function#hello: VpcConfig Validate Subnet Error DeployWithFenrir Tag is nil`,
 	},

@@ -51,3 +51,13 @@ func TestValidateAWSServerlessApiWorks(t *testing.T) {
 	err = ValidateAWSServerlessApi("pn", "cn", "rn", template, &resources.AWSServerlessApi{}, map[string]string{})
 	assert.NoError(t, err)
 }
+
+func TestValidateAWSLambdaPermission(t *testing.T) {
+	template, err := MockTemplate("../../examples/tests/allowed/good_principal.yml")
+	assert.NoError(t, err)
+
+	res, err := template.GetAWSLambdaPermissionWithName("basicHelloPermission")
+
+	err = ValidateAWSLambdaPermission("pn", "cn", "rn", template, res)
+	assert.NoError(t, err)
+}
