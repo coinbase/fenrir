@@ -52,6 +52,8 @@ type Release struct {
 	LogSummary *string `json:"log_summary,omitempty"`
 
 	Outputs map[string]string `json:"outputs,omitempty"`
+
+	Env string `json:"env,omitempty"`
 }
 
 //////////
@@ -240,7 +242,7 @@ func (release *Release) CreateChangeSetInput() (*cloudformation.CreateChangeSetI
 		return nil, err
 	}
 
-	return &cloudformation.CreateChangeSetInput{
+	changeSetInput := &cloudformation.CreateChangeSetInput{
 		ChangeSetName: release.ChangeSetName,
 		ClientToken:   release.ReleaseID,
 		Description:   to.Strp("Fenrir deploy"),
@@ -254,7 +256,13 @@ func (release *Release) CreateChangeSetInput() (*cloudformation.CreateChangeSetI
 		},
 
 		TemplateBody: to.Strp(string(templateBody)),
-	}, nil
+	}
+
+	if release.Env != "" {
+		changeSetInput.Tags = append(changeSetInput.Tags, &cloudformation.Tag{Key: to.Strp("Env"), Value: to.Strp(release.Env)})
+	}
+
+	return changeSetInput, nil
 }
 
 // FetchChangeSet returns two errors (normal error, halt error)
