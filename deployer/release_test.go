@@ -29,3 +29,24 @@ func Test_Release_Cleanup(t *testing.T) {
 
 	assert.True(t, awsc.CFClient.DeleteStackCalled)
 }
+
+func Test_Release_CreateChangeSetInput(t *testing.T) {
+	t.Run("tags", func(t *testing.T) {
+		release, err := MockRelease("../examples/tests/allowed/function.yml")
+		assert.NoError(t, err)
+
+		release.Env = "test-env"
+
+		input, err := release.CreateChangeSetInput()
+		assert.NoError(t, err)
+
+		tags := make(map[string]string)
+		for _, t := range input.Tags {
+			tags[*t.Key] = *t.Value
+		}
+
+		assert.Equal(t, "test-env", tags["Env"])
+		assert.Equal(t, "project", tags["ProjectName"])
+		assert.Equal(t, "development", tags["ConfigName"])
+	})
+}
