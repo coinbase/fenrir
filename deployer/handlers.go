@@ -57,7 +57,7 @@ func Validate(awsc aws.Clients) DeployHandler {
 func Lock(awsc aws.Clients) interface{} {
 	return func(ctx context.Context, release *Release) (*Release, error) {
 		// returns LockExistsError, LockError
-		return release, release.GrabLock(awsc.S3(release.AwsRegion, nil, nil))
+		return release, release.GrabLocks(awsc.S3(release.AwsRegion, nil, nil))
 	}
 }
 
@@ -104,7 +104,7 @@ func Execute(awsc aws.Clients) DeployHandler {
 func ReleaseLock(awsc aws.Clients) DeployHandler {
 	return func(_ context.Context, release *Release) (*Release, error) {
 
-		if err := release.ReleaseLock(awsc.S3(release.AwsRegion, nil, nil)); err != nil {
+		if err := release.UnlockRoot(awsc.S3(release.AwsRegion, nil, nil)); err != nil {
 			return nil, &errors.LockError{err.Error()}
 		}
 
