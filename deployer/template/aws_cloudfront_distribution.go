@@ -1,8 +1,9 @@
 package template
 
 import (
-	"github.com/awslabs/goformation/cloudformation"
-	"github.com/awslabs/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v3/cloudformation/cloudfront"
+	"github.com/awslabs/goformation/v3/cloudformation/tags"
 )
 
 // AWS::CloudFront::Distribution
@@ -10,11 +11,11 @@ import (
 func ValidateAWSCloudFrontDistribution(
 	projectName, configName, resourceName string,
 	template *cloudformation.Template,
-	res *resources.AWSCloudFrontDistribution,
+	res *cloudfront.Distribution,
 ) error {
-	res.Tags = append(res.Tags, resources.Tag{Key: "ProjectName", Value: projectName})
-	res.Tags = append(res.Tags, resources.Tag{Key: "ConfigName", Value: configName})
-	res.Tags = append(res.Tags, resources.Tag{Key: "ServiceName", Value: resourceName})
+	res.Tags = append(res.Tags, tags.Tag{Key: "ProjectName", Value: projectName})
+	res.Tags = append(res.Tags, tags.Tag{Key: "ConfigName", Value: configName})
+	res.Tags = append(res.Tags, tags.Tag{Key: "ServiceName", Value: resourceName})
 
 	// Disallow s3 origins for now - we need to validate them securely which isn't trivial
 	for _, origin := range res.DistributionConfig.Origins {

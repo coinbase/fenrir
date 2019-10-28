@@ -3,7 +3,7 @@ package template
 import (
 	"testing"
 
-	"github.com/awslabs/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/v3/cloudformation/serverless"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -27,7 +27,7 @@ func TestValidateAWSServerlessSimpleTableWorks(t *testing.T) {
 	template, err := MockTemplate("../../examples/tests/allowed/function.yml")
 	assert.NoError(t, err)
 
-	err = ValidateAWSServerlessSimpleTable("pn", "cn", "rn", template, &resources.AWSServerlessSimpleTable{})
+	err = ValidateAWSServerlessSimpleTable("pn", "cn", "rn", template, &serverless.SimpleTable{})
 	assert.NoError(t, err)
 }
 
@@ -35,7 +35,7 @@ func TestValidateAWSServerlessLayerVersionWorks(t *testing.T) {
 	template, err := MockTemplate("../../examples/tests/allowed/function.yml")
 	assert.NoError(t, err)
 
-	err = ValidateAWSServerlessLayerVersion("pn", "cn", "rn", template, &resources.AWSServerlessLayerVersion{
+	err = ValidateAWSServerlessLayerVersion("pn", "cn", "rn", template, &serverless.LayerVersion{
 		ContentUri: "s3://bucket/path.zip",
 	}, map[string]string{
 		"s3://bucket/path.zip": MockS3SHA(),
@@ -48,7 +48,7 @@ func TestValidateAWSServerlessApiWorks(t *testing.T) {
 	template, err := MockTemplate("../../examples/tests/allowed/function.yml")
 	assert.NoError(t, err)
 
-	err = ValidateAWSServerlessApi("pn", "cn", "rn", template, &resources.AWSServerlessApi{}, map[string]string{})
+	err = ValidateAWSServerlessApi("pn", "cn", "rn", template, &serverless.Api{}, map[string]string{})
 	assert.NoError(t, err)
 }
 
@@ -56,7 +56,7 @@ func TestValidateAWSLambdaPermission(t *testing.T) {
 	template, err := MockTemplate("../../examples/tests/allowed/good_principal.yml")
 	assert.NoError(t, err)
 
-	res, err := template.GetAWSLambdaPermissionWithName("basicHelloPermission")
+	res, err := template.GetLambdaPermissionWithName("basicHelloPermission")
 
 	err = ValidateAWSLambdaPermission("pn", "cn", "rn", template, res)
 	assert.NoError(t, err)

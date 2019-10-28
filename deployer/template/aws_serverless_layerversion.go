@@ -3,8 +3,8 @@ package template
 import (
 	"fmt"
 
-	"github.com/awslabs/goformation/cloudformation"
-	"github.com/awslabs/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v3/cloudformation/serverless"
 )
 
 // AWS::Serverless::LayerVersion
@@ -12,7 +12,7 @@ import (
 func ValidateAWSServerlessLayerVersion(
 	projectName, configName, resourceName string,
 	template *cloudformation.Template,
-	res *resources.AWSServerlessLayerVersion,
+	res *serverless.LayerVersion,
 	s3shas map[string]string,
 ) error {
 

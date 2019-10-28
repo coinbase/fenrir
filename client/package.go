@@ -29,7 +29,7 @@ func Package(releaseFile *string) error {
 
 	defer execute("docker", "rm", containerName)
 
-	for name, _ := range release.Template.GetAllAWSServerlessFunctionResources() {
+	for name, _ := range release.Template.GetAllServerlessFunctionResources() {
 		err = execute(
 			"docker",
 			"cp",

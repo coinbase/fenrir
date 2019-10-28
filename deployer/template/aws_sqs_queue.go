@@ -1,8 +1,8 @@
 package template
 
 import (
-	"github.com/awslabs/goformation/cloudformation"
-	"github.com/awslabs/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v3/cloudformation/sqs"
 )
 
 // AWS::SQS::Queue
@@ -10,7 +10,7 @@ import (
 func ValidateAWSSQSQueue(
 	projectName, configName, resourceName string,
 	template *cloudformation.Template,
-	res *resources.AWSSQSQueue,
+	res *sqs.Queue,
 ) error {
 
 	if res.DeletionPolicy() == "" {

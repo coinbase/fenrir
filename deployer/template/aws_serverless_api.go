@@ -3,14 +3,14 @@ package template
 import (
 	"fmt"
 
-	"github.com/awslabs/goformation/cloudformation"
-	"github.com/awslabs/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v3/cloudformation/serverless"
 )
 
 func ValidateAWSServerlessApi(
 	projectName, configName, resourceName string,
 	template *cloudformation.Template,
-	res *resources.AWSServerlessApi,
+	res *serverless.Api,
 	s3shas map[string]string,
 ) error {
 

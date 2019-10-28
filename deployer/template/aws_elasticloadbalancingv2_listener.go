@@ -1,14 +1,14 @@
 package template
 
 import (
-	"github.com/awslabs/goformation/cloudformation"
-	"github.com/awslabs/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v3/cloudformation/elasticloadbalancingv2"
 )
 
 func ValidateAWSElasticLoadBalancingV2Listener(
 	projectName, configName, resourceName string,
 	template *cloudformation.Template,
-	res *resources.AWSElasticLoadBalancingV2Listener,
+	res *elasticloadbalancingv2.Listener,
 ) error {
 	ref, err := decodeRef(res.LoadBalancerArn)
 	if err != nil || ref == "" {

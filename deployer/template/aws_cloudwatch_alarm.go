@@ -1,14 +1,14 @@
 package template
 
 import (
-	"github.com/awslabs/goformation/cloudformation"
-	"github.com/awslabs/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v3/cloudformation/cloudwatch"
 )
 
 func ValidateAWSCloudWatchAlarm(
 	projectName, configName, resourceName string,
 	template *cloudformation.Template,
-	res *resources.AWSCloudWatchAlarm,
+	res *cloudwatch.Alarm,
 ) error {
 	if res.AlarmName != "" {
 		return resourceError(res, resourceName, "Names are overwritten")

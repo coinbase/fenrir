@@ -60,7 +60,7 @@ func deploy(awsc aws.Clients, release *deployer.Release, deployerARN *string, re
 
 	// replace CodeURI with s3 path to uploaded zip
 	// Also write fileSHA
-	for name, res := range release.Template.GetAllAWSServerlessFunctionResources() {
+	for name, res := range release.Template.GetAllServerlessFunctionResources() {
 		file := fmt.Sprintf("%v.zip", name)
 
 		s3URI, fileSHA, err := uploadFile(awsc, file, *releaseFile, release)
