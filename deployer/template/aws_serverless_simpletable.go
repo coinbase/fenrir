@@ -1,8 +1,8 @@
 package template
 
 import (
-	"github.com/awslabs/goformation/cloudformation"
-	"github.com/awslabs/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v3/cloudformation/serverless"
 )
 
 // AWS::Serverless::SimpleTable
@@ -10,7 +10,7 @@ import (
 func ValidateAWSServerlessSimpleTable(
 	projectName, configName, resourceName string,
 	template *cloudformation.Template,
-	res *resources.AWSServerlessSimpleTable,
+	res *serverless.SimpleTable,
 ) error {
 
 	if res.DeletionPolicy() == "" {

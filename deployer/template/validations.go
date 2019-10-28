@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/awslabs/goformation/cloudformation"
+	"github.com/awslabs/goformation/v3/cloudformation"
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/fenrir/aws/subnet"
 	"github.com/coinbase/step/utils/to"
@@ -29,7 +29,7 @@ func ValidateTemplateResources(
 	for name, a := range template.Resources {
 		switch a.AWSCloudFormationType() {
 		case "AWS::Serverless::Function":
-			res, err := template.GetAWSServerlessFunctionWithName(name)
+			res, err := template.GetServerlessFunctionWithName(name)
 			if err != nil {
 				return err
 			}
@@ -41,7 +41,7 @@ func ValidateTemplateResources(
 				return err
 			}
 		case "AWS::Serverless::Api":
-			res, err := template.GetAWSServerlessApiWithName(name)
+			res, err := template.GetServerlessApiWithName(name)
 			if err != nil {
 				return err
 			}
@@ -51,7 +51,7 @@ func ValidateTemplateResources(
 			}
 
 		case "AWS::Serverless::LayerVersion":
-			res, err := template.GetAWSServerlessLayerVersionWithName(name)
+			res, err := template.GetServerlessLayerVersionWithName(name)
 			if err != nil {
 				return err
 			}
@@ -61,7 +61,7 @@ func ValidateTemplateResources(
 			}
 
 		case "AWS::Serverless::SimpleTable":
-			res, err := template.GetAWSServerlessSimpleTableWithName(name)
+			res, err := template.GetServerlessSimpleTableWithName(name)
 			if err != nil {
 				return err
 			}
@@ -71,7 +71,7 @@ func ValidateTemplateResources(
 			}
 
 		case "AWS::SQS::Queue":
-			res, err := template.GetAWSSQSQueueWithName(name)
+			res, err := template.GetSQSQueueWithName(name)
 			if err != nil {
 				return err
 			}
@@ -81,7 +81,7 @@ func ValidateTemplateResources(
 			}
 
 		case "AWS::CloudFront::Distribution":
-			res, err := template.GetAWSCloudFrontDistributionWithName(name)
+			res, err := template.GetCloudFrontDistributionWithName(name)
 			if err != nil {
 				return err
 			}
@@ -91,7 +91,7 @@ func ValidateTemplateResources(
 			}
 
 		case "AWS::CloudWatch::Alarm":
-			res, err := template.GetAWSCloudWatchAlarmWithName(name)
+			res, err := template.GetCloudWatchAlarmWithName(name)
 			if err != nil {
 				return err
 			}
@@ -101,7 +101,7 @@ func ValidateTemplateResources(
 			}
 
 		case "AWS::ElasticLoadBalancingV2::LoadBalancer":
-			res, err := template.GetAWSElasticLoadBalancingV2LoadBalancerWithName(name)
+			res, err := template.GetElasticLoadBalancingV2LoadBalancerWithName(name)
 			if err != nil {
 				return err
 			}
@@ -111,7 +111,7 @@ func ValidateTemplateResources(
 			}
 
 		case "AWS::ElasticLoadBalancingV2::TargetGroup":
-			res, err := template.GetAWSElasticLoadBalancingV2TargetGroupWithName(name)
+			res, err := template.GetElasticLoadBalancingV2TargetGroupWithName(name)
 			if err != nil {
 				return err
 			}
@@ -121,7 +121,7 @@ func ValidateTemplateResources(
 			}
 
 		case "AWS::ElasticLoadBalancingV2::Listener":
-			res, err := template.GetAWSElasticLoadBalancingV2ListenerWithName(name)
+			res, err := template.GetElasticLoadBalancingV2ListenerWithName(name)
 			if err != nil {
 				return err
 			}
@@ -131,7 +131,7 @@ func ValidateTemplateResources(
 			}
 
 		case "AWS::ElasticLoadBalancingV2::ListenerRule":
-			res, err := template.GetAWSElasticLoadBalancingV2ListenerRuleWithName(name)
+			res, err := template.GetElasticLoadBalancingV2ListenerRuleWithName(name)
 			if err != nil {
 				return err
 			}
@@ -141,7 +141,7 @@ func ValidateTemplateResources(
 			}
 
 		case "AWS::Lambda::Permission":
-			res, err := template.GetAWSLambdaPermissionWithName(name)
+			res, err := template.GetLambdaPermissionWithName(name)
 			if err != nil {
 				return err
 			}

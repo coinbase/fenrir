@@ -12,7 +12,7 @@ func TestValidateAWSServerlessFunctionWorks(t *testing.T) {
 
 	awsc := MockAwsClients()
 
-	fn, err := template.GetAWSServerlessFunctionWithName("hello")
+	fn, err := template.GetServerlessFunctionWithName("hello")
 	assert.NoError(t, err)
 
 	err = ValidateAWSServerlessFunction(

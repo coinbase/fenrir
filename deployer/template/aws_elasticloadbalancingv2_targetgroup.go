@@ -3,8 +3,9 @@ package template
 import (
 	"fmt"
 
-	"github.com/awslabs/goformation/cloudformation"
-	"github.com/awslabs/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v3/cloudformation/elasticloadbalancingv2"
+	"github.com/awslabs/goformation/v3/cloudformation/tags"
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/fenrir/aws/lambda"
 )
@@ -13,13 +14,13 @@ func ValidateAWSElasticLoadBalancingV2TargetGroup(
 	projectName, configName, resourceName string,
 	template *cloudformation.Template,
 	lambdac aws.LambdaAPI,
-	res *resources.AWSElasticLoadBalancingV2TargetGroup,
+	res *elasticloadbalancingv2.TargetGroup,
 ) error {
 	res.Name = normalizeName("fenrir", projectName, configName, resourceName, 32)
 
-	res.Tags = append(res.Tags, resources.Tag{Key: "ProjectName", Value: projectName})
-	res.Tags = append(res.Tags, resources.Tag{Key: "ConfigName", Value: configName})
-	res.Tags = append(res.Tags, resources.Tag{Key: "ServiceName", Value: resourceName})
+	res.Tags = append(res.Tags, tags.Tag{Key: "ProjectName", Value: projectName})
+	res.Tags = append(res.Tags, tags.Tag{Key: "ConfigName", Value: configName})
+	res.Tags = append(res.Tags, tags.Tag{Key: "ServiceName", Value: resourceName})
 
 	if res.TargetType == "instance" {
 		// Currently only allow empty targets list - this allows ASGs to attach targets

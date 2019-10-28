@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/awslabs/goformation"
-	"github.com/awslabs/goformation/cloudformation"
-	"github.com/awslabs/goformation/intrinsics"
+	goformation "github.com/awslabs/goformation/v3"
+	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v3/intrinsics"
 	"github.com/coinbase/fenrir/aws/mocks"
 	"github.com/coinbase/step/bifrost"
 	"github.com/coinbase/step/machine"

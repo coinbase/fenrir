@@ -3,8 +3,10 @@ package template
 import (
 	"fmt"
 
-	"github.com/awslabs/goformation/cloudformation"
-	"github.com/awslabs/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v3/cloudformation/elasticloadbalancingv2"
+
+	"github.com/awslabs/goformation/v3/cloudformation/tags"
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/fenrir/aws/sg"
 	"github.com/coinbase/fenrir/aws/subnet"
@@ -14,12 +16,12 @@ func ValidateAWSElasticLoadBalancingV2LoadBalancer(
 	projectName, configName, resourceName string,
 	template *cloudformation.Template,
 	ec2c aws.EC2API,
-	res *resources.AWSElasticLoadBalancingV2LoadBalancer,
+	res *elasticloadbalancingv2.LoadBalancer,
 ) error {
 	res.Name = normalizeName("fenrir", projectName, configName, resourceName, 32)
-	res.Tags = append(res.Tags, resources.Tag{Key: "ProjectName", Value: projectName})
-	res.Tags = append(res.Tags, resources.Tag{Key: "ConfigName", Value: configName})
-	res.Tags = append(res.Tags, resources.Tag{Key: "ServiceName", Value: resourceName})
+	res.Tags = append(res.Tags, tags.Tag{Key: "ProjectName", Value: projectName})
+	res.Tags = append(res.Tags, tags.Tag{Key: "ConfigName", Value: configName})
+	res.Tags = append(res.Tags, tags.Tag{Key: "ServiceName", Value: resourceName})
 
 	if res.Type != "application" {
 		return resourceError(res, resourceName, "Only application load balancers are supported")
@@ -45,7 +47,7 @@ func ValidateAWSElasticLoadBalancingV2LoadBalancer(
 
 func ValidateLoadbalancerSecurityGroups(
 	projectName, configName, resourceName string,
-	res *resources.AWSElasticLoadBalancingV2LoadBalancer,
+	res *elasticloadbalancingv2.LoadBalancer,
 	ec2c aws.EC2API,
 ) error {
 	if len(res.SecurityGroups) < 1 {
@@ -74,7 +76,7 @@ func ValidateLoadbalancerSecurityGroups(
 
 func ValidateLoadbalancerSubnets(
 	projectName, configName, resourceName string,
-	res *resources.AWSElasticLoadBalancingV2LoadBalancer,
+	res *elasticloadbalancingv2.LoadBalancer,
 	ec2c aws.EC2API,
 ) error {
 	if len(res.Subnets) < 1 {

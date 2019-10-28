@@ -8,14 +8,14 @@ import (
 	"github.com/aws/aws-sdk-go/service/kinesis"
 	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/awslabs/goformation/cloudformation"
-	"github.com/awslabs/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v3/cloudformation/serverless"
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/step/aws/s3"
 	"github.com/coinbase/step/utils/to"
 )
 
-func ValidateAPIEvent(template *cloudformation.Template, event *resources.AWSServerlessFunction_ApiEvent) error {
+func ValidateAPIEvent(template *cloudformation.Template, event *serverless.Function_ApiEvent) error {
 	if event == nil {
 		return fmt.Errorf("Event Properties nil")
 	}
@@ -32,7 +32,7 @@ func ValidateAPIEvent(template *cloudformation.Template, event *resources.AWSSer
 		return fmt.Errorf("RestApiId must be !Ref")
 	}
 
-	if _, err := template.GetAWSServerlessApiWithName(ref); err != nil {
+	if _, err := template.GetServerlessApiWithName(ref); err != nil {
 		return fmt.Errorf("RestApiId Reference %q not found", ref)
 	}
 
@@ -40,7 +40,7 @@ func ValidateAPIEvent(template *cloudformation.Template, event *resources.AWSSer
 	return nil
 }
 
-func ValidateS3Event(projectName, configName string, event *resources.AWSServerlessFunction_S3Event, s3c aws.S3API) error {
+func ValidateS3Event(projectName, configName string, event *serverless.Function_S3Event, s3c aws.S3API) error {
 	tags, err := s3.GetBucketTags(s3c, to.Strp(event.Bucket))
 	if err != nil {
 		return err
@@ -49,7 +49,7 @@ func ValidateS3Event(projectName, configName string, event *resources.AWSServerl
 	return hasCorrectTags(projectName, configName, tags)
 }
 
-func ValidateKinesisEvent(projectName, configName, region, accountId string, event *resources.AWSServerlessFunction_KinesisEvent, kinc aws.KINAPI) error {
+func ValidateKinesisEvent(projectName, configName, region, accountId string, event *serverless.Function_KinesisEvent, kinc aws.KINAPI) error {
 	if !strings.HasPrefix(event.Stream, "arn:") {
 		event.Stream = fmt.Sprintf("arn:aws:kinesis:%s:%s:%s", region, accountId, event.Stream)
 	}
@@ -82,7 +82,7 @@ func ValidateKinesisEvent(projectName, configName, region, accountId string, eve
 	return hasCorrectTags(projectName, configName, tags)
 }
 
-func ValidateDynamoDBEvent(projectName, configName string, event *resources.AWSServerlessFunction_DynamoDBEvent, ddbc aws.DDBAPI) error {
+func ValidateDynamoDBEvent(projectName, configName string, event *serverless.Function_DynamoDBEvent, ddbc aws.DDBAPI) error {
 	// we want to check the tags on the table itself, streams do not have tags
 	dynamodbStreamName := strings.SplitN(event.Stream, "/stream", 3)[0]
 
@@ -105,7 +105,7 @@ func ValidateDynamoDBEvent(projectName, configName string, event *resources.AWSS
 	return hasCorrectTags(projectName, configName, tags)
 }
 
-func ValidateSQSEvent(projectName, configName, region, accountId string, event *resources.AWSServerlessFunction_SQSEvent, sqsc aws.SQSAPI) error {
+func ValidateSQSEvent(projectName, configName, region, accountId string, event *serverless.Function_SQSEvent, sqsc aws.SQSAPI) error {
 	// If the event is a valid GetAtt
 	ref, err := decodeGetAtt(event.Queue)
 	if err == nil && len(ref) > 0 {
@@ -141,7 +141,7 @@ func ValidateSQSEvent(projectName, configName, region, accountId string, event *
 	return hasCorrectTags(projectName, configName, tags)
 }
 
-func ValidateSNSEvent(projectName, configName, region, accountId string, event *resources.AWSServerlessFunction_SNSEvent, snsc aws.SNSAPI) error {
+func ValidateSNSEvent(projectName, configName, region, accountId string, event *serverless.Function_SNSEvent, snsc aws.SNSAPI) error {
 	// event.Topic is ARN or NAME e.g.arn:aws:sns:us-east-1:000000000000:test-topic
 	if strings.HasPrefix(event.Topic, "arn:") {
 		region, account, resource := to.ArnRegionAccountResource(event.Topic)
@@ -171,12 +171,12 @@ func ValidateSNSEvent(projectName, configName, region, accountId string, event *
 	return hasCorrectTags(projectName, configName, tags)
 }
 
-func ValidateScheduleEvent(event *resources.AWSServerlessFunction_ScheduleEvent) error {
+func ValidateScheduleEvent(event *serverless.Function_ScheduleEvent) error {
 	// Allowed any
 	return nil
 }
 
-func ValidateCloudWatchEventEvent(event *resources.AWSServerlessFunction_CloudWatchEventEvent) error {
+func ValidateCloudWatchEventEvent(event *serverless.Function_CloudWatchEventEvent) error {
 	// Allowed any
 	return nil
 }

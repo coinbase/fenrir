@@ -1,20 +1,20 @@
 package template
 
 import (
-	"github.com/awslabs/goformation/cloudformation"
-	"github.com/awslabs/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v3/cloudformation/lambda"
 )
 
 func ValidateAWSLambdaPermission(
 	projectName, configName, resourceName string,
 	template *cloudformation.Template,
-	res *resources.AWSLambdaPermission,
+	res *lambda.Permission,
 ) error {
 	if res.Action != "lambda:InvokeFunction" {
 		return resourceError(res, resourceName, "Lambda::Permission.Action must be lambda:InvokeFunction")
 	}
 
-	allowedPrincipals := []string {
+	allowedPrincipals := []string{
 		"elasticloadbalancing.amazonaws.com",
 		"secretsmanager.amazonaws.com",
 		"apigateway.amazonaws.com",

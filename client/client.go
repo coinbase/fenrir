@@ -6,7 +6,10 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/awslabs/goformation/intrinsics"
+	goformation "github.com/awslabs/goformation/v3"
+	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v3/intrinsics"
+
 	"github.com/coinbase/step/utils/is"
 
 	"github.com/coinbase/fenrir/deployer"
@@ -14,8 +17,6 @@ import (
 	"github.com/coinbase/step/execution"
 	"github.com/coinbase/step/utils/to"
 
-	"github.com/awslabs/goformation"
-	"github.com/awslabs/goformation/cloudformation"
 	"github.com/sanathkr/yaml"
 )
 

@@ -3,8 +3,8 @@ package template
 import (
 	"fmt"
 
-	"github.com/awslabs/goformation/cloudformation"
-	"github.com/awslabs/goformation/cloudformation/resources"
+	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v3/cloudformation/serverless"
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/fenrir/aws/iam"
 	"github.com/coinbase/fenrir/aws/kms"
@@ -16,7 +16,7 @@ import (
 func ValidateAWSServerlessFunction(
 	projectName, configName, region, accountId, resourceName string,
 	template *cloudformation.Template,
-	fun *resources.AWSServerlessFunction,
+	fun *serverless.Function,
 	s3shas map[string]string,
 	iamc aws.IAMAPI,
 	ec2c aws.EC2API,
@@ -78,7 +78,7 @@ func ValidateAWSServerlessFunction(
 
 func ValidateFunctionIAM(
 	projectName, configName, accountId, resourceName string,
-	fun *resources.AWSServerlessFunction,
+	fun *serverless.Function,
 	iamc aws.IAMAPI,
 	kmsc aws.KMSAPI,
 ) error {
@@ -175,7 +175,7 @@ func ValidateFunctionIAM(
 func ValidateFunctionEvents(
 	template *cloudformation.Template,
 	projectName, configName, region, accountId, resourceName string,
-	fun *resources.AWSServerlessFunction,
+	fun *serverless.Function,
 	s3c aws.S3API,
 	kinc aws.KINAPI,
 	ddbc aws.DDBAPI,
@@ -228,7 +228,7 @@ func ValidateFunctionEvents(
 
 func ValidateVPCConfig(
 	projectName, configName, resourceName string,
-	fun *resources.AWSServerlessFunction,
+	fun *serverless.Function,
 	ec2c aws.EC2API,
 ) error {
 	if len(fun.VpcConfig.SecurityGroupIds) < 1 {
