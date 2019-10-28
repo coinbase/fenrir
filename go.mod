@@ -3,7 +3,6 @@ module github.com/coinbase/fenrir
 require (
 	github.com/aws/aws-lambda-go v1.11.1
 	github.com/aws/aws-sdk-go v1.20.2
-	github.com/awslabs/goformation v1.4.1
 	github.com/awslabs/goformation/v3 v3.0.0
 	github.com/coinbase/step v0.0.0-20190913195516-3d78393342f3
 	github.com/imdario/mergo v0.3.7 // indirect

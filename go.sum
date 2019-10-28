@@ -9,8 +9,6 @@ github.com/aws/aws-sdk-go v1.19.48/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpi
 github.com/aws/aws-sdk-go v1.20.2 h1:/BBeW8F4PPmvJ5jpFvgkCK4RJQXErNndVRnNhO2qEkQ=
 github.com/aws/aws-sdk-go v1.20.2/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go v1.20.19 h1:RQDLGGlcffQzAceEXGdMu+uGGPGhNu+vNG3BrUZAMPI=
-github.com/awslabs/goformation v1.4.1 h1:jws9kTrcI53Hq2COJAy50uAhgxB5N/Enb9Gmclr/MP4=
-github.com/awslabs/goformation v1.4.1/go.mod h1:HezUyH08DSwwGn3GioVXWZYUhkdvC+oGJ7ya7vBRm7k=
 github.com/awslabs/goformation/v3 v3.0.0 h1:Z5b6t3mVZHpAP195p9LmiLS6kqrOB1DKhnzPyKa73jo=
 github.com/awslabs/goformation/v3 v3.0.0/go.mod h1:NWYxOJpRoZtm4np627sv1nToNTbiI9p5bb5wb0qO0Aw=
 github.com/coinbase/step v0.0.0-20190408131218-9f799639d07c h1:1Eu05EjTKaiEhGQpJPB+piCXqGRu1TGQuobv+i5CLdA=
