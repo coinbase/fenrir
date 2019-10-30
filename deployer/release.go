@@ -53,7 +53,10 @@ type Release struct {
 
 	Outputs map[string]string `json:"outputs,omitempty"`
 
+	// DEPRECATED USE change_set_tags
 	Env string `json:"env,omitempty"`
+
+	ChangeSetTags map[string]string `json:"change_set_tags,omitempty"`
 }
 
 //////////
@@ -202,6 +205,18 @@ func (release *Release) SetDefaults(region *string, account *string) {
 		release.S3URISHA256s = map[string]string{}
 	}
 
+	// Override Tags
+	if release.ChangeSetTags == nil {
+		release.ChangeSetTags = map[string]string{}
+	}
+
+	release.ChangeSetTags["ProjectName"] = to.Strs(release.ProjectName)
+	release.ChangeSetTags["ConfigName"] = to.Strs(release.ConfigName)
+	release.ChangeSetTags["ReleaseID"] = to.Strs(release.ReleaseID)
+
+	if release.Env != "" {
+		release.ChangeSetTags["Env"] = release.Env
+	}
 }
 
 func (release *Release) CreateStackName() *string {
@@ -249,20 +264,20 @@ func (release *Release) CreateChangeSetInput() (*cloudformation.CreateChangeSetI
 		StackName:     release.StackName,
 		ChangeSetType: release.ChangeSetType,
 		Capabilities:  []*string{to.Strp("CAPABILITY_IAM")},
-		Tags: []*cloudformation.Tag{
-			&cloudformation.Tag{Key: to.Strp("ProjectName"), Value: release.ProjectName},
-			&cloudformation.Tag{Key: to.Strp("ConfigName"), Value: release.ConfigName},
-			&cloudformation.Tag{Key: to.Strp("ReleaseID"), Value: release.ReleaseID},
-		},
-
-		TemplateBody: to.Strp(string(templateBody)),
-	}
-
-	if release.Env != "" {
-		changeSetInput.Tags = append(changeSetInput.Tags, &cloudformation.Tag{Key: to.Strp("Env"), Value: to.Strp(release.Env)})
+		TemplateBody:  to.Strp(string(templateBody)),
+		Tags:          mapToTags(release.ChangeSetTags),
 	}
 
 	return changeSetInput, nil
+}
+
+func mapToTags(tags map[string]string) []*cloudformation.Tag {
+	cstags := []*cloudformation.Tag{}
+	for k, v := range tags {
+		cstags = append(cstags, &cloudformation.Tag{Key: to.Strp(k), Value: to.Strp(v)})
+	}
+
+	return cstags
 }
 
 // FetchChangeSet returns two errors (normal error, halt error)

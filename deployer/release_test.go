@@ -30,12 +30,16 @@ func Test_Release_Cleanup(t *testing.T) {
 	assert.True(t, awsc.CFClient.DeleteStackCalled)
 }
 
-func Test_Release_CreateChangeSetInput(t *testing.T) {
+func Test_Release_CreateChangeSetInput_Tags(t *testing.T) {
 	t.Run("tags", func(t *testing.T) {
 		release, err := MockRelease("../examples/tests/allowed/function.yml")
-		assert.NoError(t, err)
-
+		release.ChangeSetTags = map[string]string{
+			"CustomTag":   "TTTAG",
+			"ProjectName": "SHOULD_NOT_OVERRIDE",
+		}
 		release.Env = "test-env"
+		release.SetDefaults(to.Strp("region"), to.Strp("account"))
+		assert.NoError(t, err)
 
 		input, err := release.CreateChangeSetInput()
 		assert.NoError(t, err)
@@ -48,5 +52,6 @@ func Test_Release_CreateChangeSetInput(t *testing.T) {
 		assert.Equal(t, "test-env", tags["Env"])
 		assert.Equal(t, "project", tags["ProjectName"])
 		assert.Equal(t, "development", tags["ConfigName"])
+		assert.Equal(t, "TTTAG", tags["CustomTag"])
 	})
 }
