@@ -33,7 +33,10 @@ func Test_Release_Cleanup(t *testing.T) {
 func Test_Release_CreateChangeSetInput_Tags(t *testing.T) {
 	t.Run("tags", func(t *testing.T) {
 		release, err := MockRelease("../examples/tests/allowed/function.yml")
-		release.ChangeSetTags = map[string]string{"CustomTag": "TTTAG"}
+		release.ChangeSetTags = map[string]string{
+			"CustomTag":   "TTTAG",
+			"ProjectName": "SHOULD_NOT_OVERRIDE",
+		}
 		release.Env = "test-env"
 		release.SetDefaults(to.Strp("region"), to.Strp("account"))
 		assert.NoError(t, err)
