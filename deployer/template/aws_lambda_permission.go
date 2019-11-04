@@ -18,6 +18,7 @@ func ValidateAWSLambdaPermission(
 		"elasticloadbalancing.amazonaws.com",
 		"secretsmanager.amazonaws.com",
 		"apigateway.amazonaws.com",
+		"events.amazonaws.com",
 	}
 
 	if !(inSlice(res.Principal, allowedPrincipals)) {
