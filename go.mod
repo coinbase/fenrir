@@ -11,7 +11,7 @@ require (
 	github.com/xeipuuv/gojsonschema v1.1.0
 )
 
-# TODO replace once PR is merged
+// TODO replace once PR is merged
 replace github.com/awslabs/goformation/v3 v3.0.0 => github.com/grahamjenson/goformation/v3 v3.0.0-20191105231909-547d63e1fd68
 
 go 1.13
