@@ -64,7 +64,7 @@ var badFiles = []struct {
 	},
 	{
 		File:     "../examples/tests/not/bad_function_policies_role.yml",
-		ErrorStr: "AWS::Serverless::Function#hello: Must define Role XOR Policies",
+		ErrorStr: "AWS::Serverless::Function#hello: Must define either Role or Policies, not both",
 	},
 	{
 		File:     "../examples/tests/not/bad_function_policies_unsupported.yml",

@@ -166,7 +166,7 @@ func ValidateFunctionIAM(
 		}
 
 	} else {
-		return resourceError(fun, resourceName, "Must define Role XOR Policies")
+		return resourceError(fun, resourceName, "Must define either Role or Policies, not both")
 	}
 
 	return nil
