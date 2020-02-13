@@ -4,7 +4,7 @@ require (
 	github.com/aws/aws-lambda-go v1.11.1
 	github.com/aws/aws-sdk-go v1.20.2
 	github.com/awslabs/goformation/v3 v3.0.0
-	github.com/coinbase/step v0.0.0-20190913195516-3d78393342f3
+	github.com/coinbase/step v0.0.0-20200212195241-a6141d79bdd2
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/sanathkr/yaml v0.0.0-20170819201035-0056894fa522
 	github.com/stretchr/testify v1.4.0
