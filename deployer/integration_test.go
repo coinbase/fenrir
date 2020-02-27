@@ -19,7 +19,7 @@ var goodReleases = []string{}
 func init() {
 	files, err := ioutil.ReadDir("../examples/tests/allowed/")
 	if err != nil {
-		panic("Couldn't find examples files")
+		panic("Couldn't find examples files ")
 	}
 
 	for _, file := range files {

@@ -30,6 +30,7 @@ func TestValidateAWSServerlessFunctionWorks(t *testing.T) {
 		awsc.SQS(nil, nil, nil),
 		awsc.SNS(nil, nil, nil),
 		awsc.KMS(nil, nil, nil),
+		awsc.CWL(nil, nil, nil),
 	)
 
 	assert.NoError(t, err)

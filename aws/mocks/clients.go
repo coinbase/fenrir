@@ -9,6 +9,7 @@ import (
 type MockClients struct {
 	S3Client     *mocks.MockS3Client
 	CFClient     *CFClient
+	CWLClient    *CWLClient
 	EC2Client    *EC2Client
 	IAMClient    *IAMClient
 	SFNClient    *mocks.MockSFNClient
@@ -25,6 +26,7 @@ func MockAWS() *MockClients {
 	return &MockClients{
 		S3Client:     &mocks.MockS3Client{},
 		CFClient:     &CFClient{},
+		CWLClient:    &CWLClient{},
 		EC2Client:    &EC2Client{},
 		IAMClient:    &IAMClient{},
 		SFNClient:    &mocks.MockSFNClient{},
@@ -40,6 +42,10 @@ func MockAWS() *MockClients {
 // S3Client returns
 func (a *MockClients) S3(*string, *string, *string) aws.S3API {
 	return a.S3Client
+}
+
+func (a *MockClients) CWL(*string, *string, *string) aws.CWLAPI {
+	return a.CWLClient
 }
 
 func (a *MockClients) CF(*string, *string, *string) aws.CFAPI {

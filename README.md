@@ -109,6 +109,7 @@ The specific resources that it supports, and their limitations are:
 1. `Events` supported `Type`s and their limitations are:
 	1. `Api`: It must have `RestApiId` that is a reference to a local API resource
 	1. `S3`: `Bucket` must have *correct tags*<sup>*</sup>
+	1. `CloudWatchLogs`: `LogGroupName` must have *correct tags*<sup>*</sup>
 	1. `Kinesis`: `Stream` must have *correct tags*<sup>*</sup>
 	1. `DynamoDB`: `Stream` must have *correct tags*<sup>*</sup>
 	1. `SQS`: `Queue` must have *correct tags*<sup>*</sup>

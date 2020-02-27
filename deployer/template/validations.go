@@ -24,6 +24,7 @@ func ValidateTemplateResources(
 	snsc aws.SNSAPI,
 	kmsc aws.KMSAPI,
 	lambdac aws.LambdaAPI,
+	cwlc aws.CWLAPI,
 ) error {
 
 	for name, a := range template.Resources {
@@ -37,7 +38,7 @@ func ValidateTemplateResources(
 			if err := ValidateAWSServerlessFunction(
 				projectName, configName, region, accountId, name,
 				template, res, s3shas,
-				iamc, ec2c, s3c, kinc, ddbc, sqsc, snsc, kmsc); err != nil {
+				iamc, ec2c, s3c, kinc, ddbc, sqsc, snsc, kmsc, cwlc); err != nil {
 				return err
 			}
 		case "AWS::Serverless::Api":

@@ -11,4 +11,8 @@ require (
 	github.com/xeipuuv/gojsonschema v1.1.0
 )
 
+// This replaces goformation with a fork that has the fix on it
+// TODO replace once PR https://github.com/awslabs/goformation/pull/271 is merged
+replace github.com/awslabs/goformation/v4 v4.6.0 => github.com/grahamjenson/goformation/v4 v4.0.0-20200227205046-704c8e4046a8
+
 go 1.13

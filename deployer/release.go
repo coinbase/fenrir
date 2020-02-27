@@ -156,6 +156,7 @@ func (release *Release) ValidateTemplate(
 	snsc aws.SNSAPI,
 	kmsc aws.KMSAPI,
 	lambdac aws.LambdaAPI,
+	cwlc aws.CWLAPI,
 ) error {
 	// Disabling some template objects because their interations might be
 	if release.Template.Parameters != nil {
@@ -178,7 +179,7 @@ func (release *Release) ValidateTemplate(
 		*release.ProjectName, *release.ConfigName,
 		*release.AwsRegion, *release.AwsAccountID,
 		release.Template, release.S3URISHA256s,
-		iamc, ec2c, s3c, kinc, ddbc, sqsc, snsc, kmsc, lambdac); err != nil {
+		iamc, ec2c, s3c, kinc, ddbc, sqsc, snsc, kmsc, lambdac, cwlc); err != nil {
 		return err
 	}
 

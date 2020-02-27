@@ -3,6 +3,8 @@ package aws
 import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface"
+	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
+	"github.com/aws/aws-sdk-go/service/cloudwatchlogs/cloudwatchlogsiface"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	"github.com/aws/aws-sdk-go/service/ec2"
@@ -88,6 +90,9 @@ type S3API s3iface.S3API
 // CFAPI is cloudfomration API
 type CFAPI cloudformationiface.CloudFormationAPI
 
+// CWLAPI is cloud watch logs API
+type CWLAPI cloudwatchlogsiface.CloudWatchLogsAPI
+
 // EC2API aws API
 type EC2API ec2iface.EC2API
 
@@ -128,6 +133,7 @@ type Clients interface {
 	SQS(region *string, accountID *string, role *string) SQSAPI
 	KMS(region *string, accountID *string, role *string) KMSAPI
 	Lambda(region *string, accountID *string, role *string) LambdaAPI
+	CWL(region *string, accountID *string, role *string) CWLAPI
 }
 
 // ClientsStr implementation
@@ -143,6 +149,11 @@ func (awsc *ClientsStr) S3(region *string, accountID *string, role *string) S3AP
 // CF returns cloudformation client
 func (awsc *ClientsStr) CF(region *string, accountID *string, role *string) CFAPI {
 	return cloudformation.New(awsc.Session(), awsc.Config(region, accountID, role))
+}
+
+// CF returns cloudformation client
+func (awsc *ClientsStr) CWL(region *string, accountID *string, role *string) CWLAPI {
+	return cloudwatchlogs.New(awsc.Session(), awsc.Config(region, accountID, role))
 }
 
 // EC2 returns client for region account and role
