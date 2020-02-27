@@ -14,6 +14,6 @@ Resources:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !GetAtt [basicHello, Arn]
+      FunctionName: !GetAtt basicHello.Arn
       # Bad principal: we only allow whitelisted principals in aws_lambda_permissions.go
       Principal: badprincipal.amazonaws.com

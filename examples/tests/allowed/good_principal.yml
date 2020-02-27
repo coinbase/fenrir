@@ -14,6 +14,6 @@ Resources:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !GetAtt [basicHello, Arn]
+      FunctionName: !GetAtt basicHello.Arn
       # This principal is whitelisted in aws_lambda_permissions.go
       Principal: elasticloadbalancing.amazonaws.com

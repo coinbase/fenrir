@@ -3,9 +3,9 @@ package template
 import (
 	"fmt"
 
-	"github.com/awslabs/goformation/v3/cloudformation"
-	"github.com/awslabs/goformation/v3/cloudformation/elasticloadbalancingv2"
-	"github.com/awslabs/goformation/v3/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation"
+	"github.com/awslabs/goformation/v4/cloudformation/elasticloadbalancingv2"
+	"github.com/awslabs/goformation/v4/cloudformation/tags"
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/fenrir/aws/lambda"
 )
@@ -44,7 +44,7 @@ func ValidateAWSElasticLoadBalancingV2TargetGroup(
 		if err != nil || len(args) != 2 || args[1] != "Arn" {
 			lambda, err := lambda.FindFunction(lambdac, target.Id)
 			if err != nil {
-				return resourceError(res, resourceName, "TargetGroup.Targets.Id must be \"!GetAtt <lambdaName> Arn\" or a valid lambda ARN")
+				return resourceError(res, resourceName, "TargetGroup.Targets.Id must be \"!GetAtt <lambdaName>.Arn\" or a valid lambda ARN")
 			}
 
 			if err := hasCorrectTags(projectName, configName, convTagMap(lambda.Tags)); err != nil {

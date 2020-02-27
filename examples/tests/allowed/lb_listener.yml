@@ -32,7 +32,7 @@ Resources:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !GetAtt [basicHello, Arn]
+      FunctionName: !GetAtt basicHello.Arn
       Principal: elasticloadbalancing.amazonaws.com
 
   lbHelloRule:
@@ -55,4 +55,4 @@ Resources:
     Properties:
       TargetType: lambda
       Targets:
-      - Id: !GetAtt [basicHello, Arn]
+      - Id: !GetAtt basicHello.Arn

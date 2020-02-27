@@ -15,7 +15,7 @@ Resources:
         queuelisten:
           Type: SQS
           Properties:
-            Queue: !GetAtt [queue, arn]
+            Queue: !GetAtt queue.arn
 
   queue:
     Type: AWS::SQS::Queue

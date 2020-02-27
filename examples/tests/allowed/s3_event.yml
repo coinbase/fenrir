@@ -19,5 +19,8 @@ Resources:
             Events:
               - s3:ObjectCreated:*
             Filter:
-              S3Key: "asd"
+              S3Key:
+                Rules:
+                  - Name: prefix|suffix
+                    Value: my-prefix|my-suffix
 

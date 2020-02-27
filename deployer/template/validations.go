@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/awslabs/goformation/v3/cloudformation"
+	"github.com/awslabs/goformation/v4/cloudformation"
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/fenrir/aws/subnet"
 	"github.com/coinbase/step/utils/to"

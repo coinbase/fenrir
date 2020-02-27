@@ -3,10 +3,10 @@ package template
 import (
 	"fmt"
 
-	"github.com/awslabs/goformation/v3/cloudformation"
-	"github.com/awslabs/goformation/v3/cloudformation/elasticloadbalancingv2"
+	"github.com/awslabs/goformation/v4/cloudformation"
+	"github.com/awslabs/goformation/v4/cloudformation/elasticloadbalancingv2"
 
-	"github.com/awslabs/goformation/v3/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/tags"
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/fenrir/aws/sg"
 	"github.com/coinbase/fenrir/aws/subnet"

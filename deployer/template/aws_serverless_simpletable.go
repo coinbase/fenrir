@@ -1,8 +1,9 @@
 package template
 
 import (
-	"github.com/awslabs/goformation/v3/cloudformation"
-	"github.com/awslabs/goformation/v3/cloudformation/serverless"
+	"github.com/awslabs/goformation/v4/cloudformation"
+	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/serverless"
 )
 
 // AWS::Serverless::SimpleTable
@@ -13,8 +14,8 @@ func ValidateAWSServerlessSimpleTable(
 	res *serverless.SimpleTable,
 ) error {
 
-	if res.DeletionPolicy() == "" {
-		res.SetDeletionPolicy("Retain")
+	if res.AWSCloudFormationDeletionPolicy == "" {
+		res.AWSCloudFormationDeletionPolicy = policies.DeletionPolicy("Retain")
 	}
 
 	if res.TableName != "" {

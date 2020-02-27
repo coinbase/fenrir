@@ -1,8 +1,9 @@
 package template
 
 import (
-	"github.com/awslabs/goformation/v3/cloudformation"
-	"github.com/awslabs/goformation/v3/cloudformation/sqs"
+	"github.com/awslabs/goformation/v4/cloudformation"
+	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/sqs"
 )
 
 // AWS::SQS::Queue
@@ -13,8 +14,8 @@ func ValidateAWSSQSQueue(
 	res *sqs.Queue,
 ) error {
 
-	if res.DeletionPolicy() == "" {
-		res.SetDeletionPolicy("Retain")
+	if res.AWSCloudFormationDeletionPolicy == "" {
+		res.AWSCloudFormationDeletionPolicy = policies.DeletionPolicy("Retain")
 	}
 
 	if res.QueueName != "" {

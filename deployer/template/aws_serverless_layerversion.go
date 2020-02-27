@@ -3,8 +3,8 @@ package template
 import (
 	"fmt"
 
-	"github.com/awslabs/goformation/v3/cloudformation"
-	"github.com/awslabs/goformation/v3/cloudformation/serverless"
+	"github.com/awslabs/goformation/v4/cloudformation"
+	"github.com/awslabs/goformation/v4/cloudformation/serverless"
 )
 
 // AWS::Serverless::LayerVersion
