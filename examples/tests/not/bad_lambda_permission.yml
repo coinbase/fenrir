@@ -14,5 +14,5 @@ Resources:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:GetFunction # Bad permission, we only allow invoke.
-      FunctionName: !GetAtt [basicHello, Arn]
+      FunctionName: !GetAtt basicHello.Arn
       Principal: elasticloadbalancing.amazonaws.com

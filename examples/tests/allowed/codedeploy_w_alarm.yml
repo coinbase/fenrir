@@ -28,9 +28,9 @@ Resources:
         - Name: Resource
           Value: !Sub "${hello}:live"
         - Name: FunctionName
-          Value: !Ref hello 
+          Value: !Ref hello
         - Name: ExecutedVersion
-          Value: !GetAtt [hello.Version, Version]
+          Value: !GetAtt hello.Version
       EvaluationPeriods: 2
       Namespace: AWS/Lambda
       Period: 60

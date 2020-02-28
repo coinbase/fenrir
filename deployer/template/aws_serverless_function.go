@@ -3,8 +3,8 @@ package template
 import (
 	"fmt"
 
-	"github.com/awslabs/goformation/v3/cloudformation"
-	"github.com/awslabs/goformation/v3/cloudformation/serverless"
+	"github.com/awslabs/goformation/v4/cloudformation"
+	"github.com/awslabs/goformation/v4/cloudformation/serverless"
 	"github.com/coinbase/fenrir/aws"
 	"github.com/coinbase/fenrir/aws/iam"
 	"github.com/coinbase/fenrir/aws/kms"
@@ -26,6 +26,7 @@ func ValidateAWSServerlessFunction(
 	sqsc aws.SQSAPI,
 	snsc aws.SNSAPI,
 	kmsc aws.KMSAPI,
+	cwlc aws.CWLAPI,
 ) error {
 
 	if fun.FunctionName != "" {
@@ -53,7 +54,7 @@ func ValidateAWSServerlessFunction(
 		}
 	}
 
-	if err := ValidateFunctionEvents(template, projectName, configName, region, accountId, resourceName, fun, s3c, kinc, ddbc, sqsc, snsc); err != nil {
+	if err := ValidateFunctionEvents(template, projectName, configName, region, accountId, resourceName, fun, s3c, kinc, ddbc, sqsc, snsc, cwlc); err != nil {
 		return err
 	}
 
@@ -181,6 +182,7 @@ func ValidateFunctionEvents(
 	ddbc aws.DDBAPI,
 	sqsc aws.SQSAPI,
 	snsc aws.SNSAPI,
+	cwlc aws.CWLAPI,
 ) error {
 	// Support and Validate These Events
 	// S3 SNS Kinesis DynamoDB SQS Api Schedule CloudWatchEvent CloudWatchLogs IoTRule AlexaSkill
@@ -217,6 +219,10 @@ func ValidateFunctionEvents(
 		case "CloudWatchEvent":
 			if err := ValidateCloudWatchEventEvent(event.Properties.CloudWatchEventEvent); err != nil {
 				return resourceError(fun, resourceName, fmt.Sprintf("CloudWatch Event %q %v", eventName, err.Error()))
+			}
+		case "CloudWatchLogs":
+			if err := ValidateCloudWatchLogsEvent(projectName, configName, event.Properties.CloudWatchLogsEvent, cwlc); err != nil {
+				return resourceError(fun, resourceName, fmt.Sprintf("CloudWatchLogs Event %q %v", eventName, err.Error()))
 			}
 		default:
 			return resourceError(fun, resourceName, fmt.Sprintf("Event %q Unsupported Event type %q", eventName, event.Type))

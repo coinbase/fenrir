@@ -1,8 +1,8 @@
 package template
 
 import (
-	"github.com/awslabs/goformation/v3/cloudformation"
-	"github.com/awslabs/goformation/v3/cloudformation/lambda"
+	"github.com/awslabs/goformation/v4/cloudformation"
+	"github.com/awslabs/goformation/v4/cloudformation/lambda"
 )
 
 func ValidateAWSLambdaPermission(

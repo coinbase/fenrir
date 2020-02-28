@@ -8,9 +8,10 @@ import (
 	"github.com/aws/aws-sdk-go/service/kinesis"
 	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/awslabs/goformation/v3/cloudformation"
-	"github.com/awslabs/goformation/v3/cloudformation/serverless"
+	"github.com/awslabs/goformation/v4/cloudformation"
+	"github.com/awslabs/goformation/v4/cloudformation/serverless"
 	"github.com/coinbase/fenrir/aws"
+	"github.com/coinbase/fenrir/aws/cwl"
 	"github.com/coinbase/step/aws/s3"
 	"github.com/coinbase/step/utils/to"
 )
@@ -42,6 +43,15 @@ func ValidateAPIEvent(template *cloudformation.Template, event *serverless.Funct
 
 func ValidateS3Event(projectName, configName string, event *serverless.Function_S3Event, s3c aws.S3API) error {
 	tags, err := s3.GetBucketTags(s3c, to.Strp(event.Bucket))
+	if err != nil {
+		return err
+	}
+
+	return hasCorrectTags(projectName, configName, tags)
+}
+
+func ValidateCloudWatchLogsEvent(projectName, configName string, event *serverless.Function_CloudWatchLogsEvent, cwlc aws.CWLAPI) error {
+	tags, err := cwl.ListLogGroupTags(cwlc, to.Strp(event.LogGroupName))
 	if err != nil {
 		return err
 	}

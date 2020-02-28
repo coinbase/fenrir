@@ -3,9 +3,9 @@ package template
 import (
 	"io/ioutil"
 
-	goformation "github.com/awslabs/goformation/v3"
-	"github.com/awslabs/goformation/v3/cloudformation"
-	"github.com/awslabs/goformation/v3/intrinsics"
+	goformation "github.com/awslabs/goformation/v4"
+	"github.com/awslabs/goformation/v4/cloudformation"
+	"github.com/awslabs/goformation/v4/intrinsics"
 	"github.com/coinbase/fenrir/aws/mocks"
 )
 

@@ -12,10 +12,8 @@ Resources:
       Runtime: go1.x
       Timeout: 5
       Events:
-        queuelisten:
-          Type: SQS
+        LogWatch:
+          Type: CloudWatchLogs
           Properties:
-            Queue: !GetAtt queue.arn
-
-  queue:
-    Type: AWS::SQS::Queue
+            LogGroupName: MyLogGroup
+            FilterPattern: Error

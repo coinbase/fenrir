@@ -1,9 +1,9 @@
 package template
 
 import (
-	"github.com/awslabs/goformation/v3/cloudformation"
-	"github.com/awslabs/goformation/v3/cloudformation/cloudfront"
-	"github.com/awslabs/goformation/v3/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation"
+	"github.com/awslabs/goformation/v4/cloudformation/cloudfront"
+	"github.com/awslabs/goformation/v4/cloudformation/tags"
 )
 
 // AWS::CloudFront::Distribution
