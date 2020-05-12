@@ -26,12 +26,12 @@ func Validate(awsc aws.Clients) DeployHandler {
 		release.ReleaseSHA256 = to.SHA256Struct(release)
 
 		// Default the releases Account and Region to where the Lambda is running
-		region, account := to.AwsRegionAccountFromContext(ctx)
+		lambdaRegion, lambdaAccount := to.AwsRegionAccountFromContext(ctx)
 
 		// Fill in all the blank Attributes
-		release.SetDefaults(region, account)
+		release.SetDefaults(lambdaRegion, lambdaAccount)
 
-		if err := release.Validate(awsc.S3(release.AwsRegion, nil, nil)); err != nil {
+		if err := release.Validate(awsc.S3(lambdaRegion, nil, nil)); err != nil {
 			return nil, &errors.BadReleaseError{err.Error()}
 		}
 
