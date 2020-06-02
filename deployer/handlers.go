@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/coinbase/fenrir/aws"
+	"github.com/coinbase/step/aws/dynamodb"
 	"github.com/coinbase/step/bifrost"
 	"github.com/coinbase/step/errors"
 	"github.com/coinbase/step/utils/to"
@@ -32,7 +33,7 @@ func Validate(awsc aws.Clients) DeployHandler {
 		release.SetDefaults(region, account)
 
 		if err := release.Validate(awsc.S3(release.AwsRegion, nil, nil)); err != nil {
-			return nil, &errors.BadReleaseError{err.Error()}
+			return nil, &errors.BadReleaseError{Cause: err.Error()}
 		}
 
 		if err := release.ValidateTemplate(
@@ -47,7 +48,7 @@ func Validate(awsc aws.Clients) DeployHandler {
 			awsc.Lambda(release.AwsRegion, release.AwsAccountID, assumedRole),
 			awsc.CWL(release.AwsRegion, release.AwsAccountID, assumedRole),
 		); err != nil {
-			return nil, &errors.BadReleaseError{err.Error()}
+			return nil, &errors.BadReleaseError{Cause: err.Error()}
 		}
 
 		return release, nil
@@ -58,7 +59,12 @@ func Validate(awsc aws.Clients) DeployHandler {
 func Lock(awsc aws.Clients) interface{} {
 	return func(ctx context.Context, release *Release) (*Release, error) {
 		// returns LockExistsError, LockError
-		return release, release.GrabLocks(awsc.S3(release.AwsRegion, nil, nil))
+		err := release.GrabLocks(
+			awsc.S3(release.AwsRegion, nil, nil),
+			dynamodb.NewDynamoDBLocker(awsc.DynamoDBClient(nil, nil, nil)),
+			getLockTableNameFromContext(ctx, "-locks"),
+		)
+		return release, err
 	}
 }
 
@@ -69,7 +75,7 @@ func CreateChangeSet(awsc aws.Clients) DeployHandler {
 		if err := release.CreateChangeSet(
 			awsc.CF(release.AwsRegion, release.AwsAccountID, assumedRole),
 		); err != nil {
-			return nil, &errors.BadReleaseError{err.Error()}
+			return nil, &errors.BadReleaseError{Cause: err.Error()}
 		}
 
 		return release, nil
@@ -94,7 +100,7 @@ func Execute(awsc aws.Clients) DeployHandler {
 		if err := release.Execute(
 			awsc.CF(release.AwsRegion, release.AwsAccountID, assumedRole),
 		); err != nil {
-			return nil, &errors.HaltError{err.Error()}
+			return nil, &errors.HaltError{Cause: err.Error()}
 		}
 
 		return release, nil
@@ -103,14 +109,17 @@ func Execute(awsc aws.Clients) DeployHandler {
 
 // ReleaseLock releases lock with sucess
 func ReleaseLock(awsc aws.Clients) DeployHandler {
-	return func(_ context.Context, release *Release) (*Release, error) {
-
-		if err := release.UnlockRoot(awsc.S3(release.AwsRegion, nil, nil)); err != nil {
-			return nil, &errors.LockError{err.Error()}
+	return func(ctx context.Context, release *Release) (*Release, error) {
+		err := release.UnlockRoot(
+			awsc.S3(release.AwsRegion, nil, nil),
+			dynamodb.NewDynamoDBLocker(awsc.DynamoDBClient(nil, nil, nil)),
+			getLockTableNameFromContext(ctx, "-locks"),
+		)
+		if err != nil {
+			return nil, &errors.LockError{Cause: err.Error()}
 		}
 
 		release.Success = to.Boolp(true)
-
 		return release, nil
 	}
 }
@@ -140,7 +149,7 @@ func CleanUp(awsc aws.Clients) DeployHandler {
 			awsc.S3(release.AwsRegion, nil, nil),
 			awsc.CF(release.AwsRegion, release.AwsAccountID, assumedRole),
 		); err != nil {
-			return nil, &errors.CleanUpError{err.Error()}
+			return nil, &errors.CleanUpError{Cause: err.Error()}
 		}
 
 		// Add Error if if can be found
@@ -162,4 +171,9 @@ func CleanUp(awsc aws.Clients) DeployHandler {
 
 		return release, nil
 	}
+}
+
+func getLockTableNameFromContext(ctx context.Context, postfix string) string {
+	_, _, lambdaName := to.AwsRegionAccountLambdaNameFromContext(ctx)
+	return fmt.Sprintf("%s%s", lambdaName, postfix)
 }
