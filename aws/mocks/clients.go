@@ -19,6 +19,7 @@ type MockClients struct {
 	SQSClient    *SQSClient
 	KMSClient    *KMSClient
 	LambdaClient *LambdaClient
+	DynamoDB     *mocks.MockDynamoDBClient
 }
 
 // MockAWS mock clients
@@ -36,6 +37,7 @@ func MockAWS() *MockClients {
 		SQSClient:    &SQSClient{},
 		KMSClient:    &KMSClient{},
 		LambdaClient: &LambdaClient{},
+		DynamoDB:     &mocks.MockDynamoDBClient{},
 	}
 }
 
@@ -90,4 +92,8 @@ func (a *MockClients) KMS(*string, *string, *string) aws.KMSAPI {
 
 func (a *MockClients) Lambda(*string, *string, *string) aws.LambdaAPI {
 	return a.LambdaClient
+}
+
+func (a *MockClients) DynamoDBClient(*string, *string, *string) aws.DynamoDBAPI {
+	return a.DynamoDB
 }

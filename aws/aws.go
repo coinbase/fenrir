@@ -85,40 +85,43 @@ func HasServiceName(r interface {
 }
 
 // S3API aws API
-type S3API s3iface.S3API
+type S3API = s3iface.S3API
 
 // CFAPI is cloudfomration API
-type CFAPI cloudformationiface.CloudFormationAPI
+type CFAPI = cloudformationiface.CloudFormationAPI
 
 // CWLAPI is cloud watch logs API
-type CWLAPI cloudwatchlogsiface.CloudWatchLogsAPI
+type CWLAPI = cloudwatchlogsiface.CloudWatchLogsAPI
 
 // EC2API aws API
-type EC2API ec2iface.EC2API
+type EC2API = ec2iface.EC2API
 
 // IAMAPI aws API
-type IAMAPI iamiface.IAMAPI
+type IAMAPI = iamiface.IAMAPI
 
 // SFNAPI aws API
-type SFNAPI sfniface.SFNAPI
+type SFNAPI = sfniface.SFNAPI
 
 // SNSAPI aws API
-type SNSAPI snsiface.SNSAPI
+type SNSAPI = snsiface.SNSAPI
 
 // KINAPI kinesis api
-type KINAPI kinesisiface.KinesisAPI
+type KINAPI = kinesisiface.KinesisAPI
 
 // DDBAPI DynamoDB api
-type DDBAPI dynamodbiface.DynamoDBAPI
+type DDBAPI = dynamodbiface.DynamoDBAPI
 
 // SQSAPI SQS api
-type SQSAPI sqsiface.SQSAPI
+type SQSAPI = sqsiface.SQSAPI
 
 // KMSAPI KMS api
-type KMSAPI kmsiface.KMSAPI
+type KMSAPI = kmsiface.KMSAPI
 
 // LambdaAPI aws api
-type LambdaAPI lambdaiface.LambdaAPI
+type LambdaAPI = lambdaiface.LambdaAPI
+
+// DynamoDBAPI aws API
+type DynamoDBAPI = dynamodbiface.DynamoDBAPI
 
 // Clients for AWS
 type Clients interface {
@@ -134,6 +137,7 @@ type Clients interface {
 	KMS(region *string, accountID *string, role *string) KMSAPI
 	Lambda(region *string, accountID *string, role *string) LambdaAPI
 	CWL(region *string, accountID *string, role *string) CWLAPI
+	DynamoDBClient(region *string, accountID *string, role *string) DynamoDBAPI
 }
 
 // ClientsStr implementation
@@ -199,4 +203,9 @@ func (awsc *ClientsStr) KMS(region *string, accountID *string, role *string) KMS
 // LAMBDA returns client
 func (awsc *ClientsStr) Lambda(region *string, accountID *string, role *string) LambdaAPI {
 	return lambda.New(awsc.Session(), awsc.Config(region, accountID, role))
+}
+
+// DynamoDBClient returns client for region account and role
+func (awsc *ClientsStr) DynamoDBClient(region, account_id, role *string) DynamoDBAPI {
+	return dynamodb.New(awsc.Session(), awsc.Config(region, account_id, role))
 }
