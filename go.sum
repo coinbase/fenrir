@@ -22,6 +22,8 @@ github.com/awslabs/goformation/v4 v4.6.0 h1:5Dy1ZW4ruMlYlq6+PsSCEwW2w00wv7mkFr00
 github.com/awslabs/goformation/v4 v4.6.0/go.mod h1:MBDN7u1lMNDoehbFuO4uPvgwPeolTMA2TzX1yO6KlxI=
 github.com/awslabs/goformation/v4 v4.8.0 h1:UiUhyokRy3suEqBXTnipvY8klqY3Eyl4GCH17brraEc=
 github.com/awslabs/goformation/v4 v4.8.0/go.mod h1:GcJULxCJfloT+3pbqCluXftdEK2AD/UqpS3hkaaBntg=
+github.com/awslabs/goformation/v4 v4.12.0 h1:1imvz5ml178AMp5JkoXrkUWTilow4OoOCHFRD+is/i4=
+github.com/awslabs/goformation/v4 v4.12.0/go.mod h1:GcJULxCJfloT+3pbqCluXftdEK2AD/UqpS3hkaaBntg=
 github.com/cenkalti/backoff v2.1.1+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
 github.com/cenkalti/backoff v2.2.1+incompatible h1:tNowT99t7UNflLxfYYSlKYsBpXdEet03Pg2g16Swow4=
 github.com/cenkalti/backoff v2.2.1+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
